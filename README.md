@@ -18,7 +18,7 @@ devtools::install_github("sebmerk/RTutorInnoComp", upgrade_dependencies=FALSE)
 ## 2. Show and work on the problem set
 To start the problem set first create a working directory in which files like the data sets and your solution will be stored. Then adapt and run the following code.
 ```s
-library(InnovationMarketStructure)
+library(RTutorInnoComp)
 
 # Adapt your working directory to an existing folder
 setwd("C:/problemsets/")
