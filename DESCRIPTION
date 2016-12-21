@@ -1,0 +1,11 @@
+Package: InnovationMarketStructure
+Type: Package
+Title: RTutor problem set InnoComp
+Version: 0.1
+Date: 2016-21-12
+Author: Sebastian Merk
+Maintainer: Sebastian Merk <author@email.net>
+Description: RTutor problem set InnovationMarketStructure_new
+License: Creative Commons (CC BY-SA)
+	Package code: GPL >= 2.0
+Depends: RTutor, foreign, plyr, dplyr, lfe, OECD, reshape2, bbmle, moments, plotly, gridExtra, regtools, dplyrExtras, AER, ggplot2

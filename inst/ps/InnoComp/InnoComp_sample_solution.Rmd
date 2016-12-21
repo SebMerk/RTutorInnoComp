@@ -1,0 +1,2023 @@
+# Innovation and Market Structure: A CASE STUDY OF THE AUTOMOBILE INDUSTRY
+
+
+```{r 'check_ps', include=FALSE}
+
+user.name = 'Jane Doe' # set to your user name
+
+library(RTutor)
+check.problem.set('InnoComp', ps.dir, ps.file, user.name=user.name, reset=FALSE)
+
+# Run the Addin 'Check Problemset' to save and check your solution
+```
+
+
+Author: Sebastian Merk  
+Date: 14.12.2016  
+
+
+
+
+## Exercise Overview
+
+This RTutor problem set analysis the relationship between market structure and innovation in the global automotive industry. It is based on the paper **The Relationship Between Market Structure and Innovation in Industry Equilibrium: A Case Study of the Global Automobile Industry** by Aamir Rafique Hashmi and Johannes Van Biesebroeck. The paper was published in *The Review of Economics and Statistics 98 (1)* in 2016.    
+You can download the paper from <a href="http://www.mitpressjournals.org/doi/abs/10.1162/REST_a_00494?journalCode=rest#.WB8AzPnhCUk" target = "_blank"> MIT Press Journals</a>. The authors also provide all data sets and STATA and Matlab code files to reproduce their empirical results. These are available to download on <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/27065" target = "_blank"> Harvard Dataverse</a>.    
+
+
+Understanding the relationship between market structure and innovation is crucial to competition policy. Policy makers often bring forward the argument that competition encourages innovation and subsequently economic growth. For example, the European Commission argues that "some mergers may reduce competition in a market, usually by creating or strengthening a dominant player. This is likely to harm consumers through [...] less innovation" (EC 2013). This seems contrary to Schumpeter (1942) who argues that a high market concentration, i.e. a market with large-scale enterprises or even monopolists, is more beneficial to innovation than markets with perfect competition. Firms with less competition, he argues, can more easily fund R&D activities because there is less uncertainty in the market. He also argues that by not tolerating the creation of a monopoly the main incentive to innovate, the monopoly rent, ceases to exist. In contrast, Arrow (1962) brings forward the argument that a monopolist's incentive to innovate is less than that of a competitive firm due to the monopolist already earning positive profits, whereas the competitive firm is only able to regain its costs.    
+  
+This apparent contrast between Schumpeter and Arrow's positions have led to a wide range of empirical studies on the topic. Most of these empirical studies engage a reduced-form analysis, where a measure of innovation (often the number of patents) is regressed on a measure of market structure or competition (e.g. Lerner or Herfindahl Index). These studies have found mixed support for Schumpeter and Arrow's hypotheses. Boone (2000) and Gilbert (2006) argue that the relationship is in general not monotonic. Aghion et. al. (2006) find a inverted-U relationship between product market competition and innovation.    
+  
+Complementary to these reduced-form studies, which try to describe the relationship across industries, Hashmi and Van Biesebroeck (2016) construct and estimate a structural model of dynamic oligopoly for a single industry, namely the automotive industry. This means, that they can incorporate the evolution of the market structure into their model. This is a huge advantage compared to the reduced-form models, as these have to deal with possible endogeneity of market structure. With the structural model of the automotive industry, they then can analyze how changes in the industry structure interact with the innovation activities of incumbent firms.  
+
+Don't bother if you don't know terms like *Herfindahl index*, *endogeneity* or *structural model* that were mentioned in this brief introduction to the topic and the paper. The problem set contains **info boxes** which will explain economic theory or R commands in detail. So depending on your prior knowledge you can skip info boxes in order to proceed faster.
+  
+
+**The problem set has the following structure:**  
+
+
+  1. Background on the Global Automotive Industry  
+In this exercise we will get a first overview of the automotive industry and the data that will be used to analyze it. First we will compare R&D expenditures from different industries to see where the automotive industry stands in regard of this. Then we will take a look at the market shares of the different car makers in our sample period.
+
+  2. A First Look at the Relationship Between Innovation and Market Structure  
+This exercise provides a first illustration of the empirical relationship between a measure of innovation (the number of patent) and a measure of market structure (the Herfindahl index of market concentration).
+  
+  3. The Structural Model  
+This exercise introduces the elements of Hashmi and Van Biesebroeck's structural model of industry equilibrium. In this model each firm produces a single  differentiated car, only characterized by the firm's product quality. Firms decide in each period on price and investment in R&D. The price affects only current profits. In contrast, the level of investment in R&D has long-lasting effects, as it increases the firm's product quality in the future. This is the reason why we need a dynamic model, costs and benefits of R&D investment occur in different periods.  
+In Exercises 3.1. to (3.4.) we estimate the parameters of the model. For time reasons, Exercises (3.3.) and (3.4.), only replicate the results of the paper and provide no explanations. You can thus skip them and go directly to exercise 4.   
+
+  3.1. Estimation of the Demand and Cost Parameters  
+  
+  3.2. Estimation of the State Transitions and the Policy Function  
+  
+  (3.3.) Computation of the Value Function  
+  
+  (3.4.) Estimation of the Dynamic Parameters  
+  
+  4. Industry Equilibrium  
+In this exercise we use the estimated model parameters to calculate the Markov Perfect Nash Equilibrium (MPE). We then can use the equilibrium interactions of the firms to investigate the relationship between innovation and market structure.
+
+  4.1. Equilibrium Relationship between Market Structure and Innovation 
+  
+  4.2. Counterfactual Scenario: Effect of Entry  
+
+  5. Conclusion  
+  
+  6. References  
+  
+  7. Appendix 1: OECD Data  
+  
+  8. Appendix 2: Verboven's Data
+  
+  9. Appendix 3: Pakes-McGuire Algorithm
+  
+  
+It is not necessary to solve the problem set in the given order, but it is recommended, as you might need knowledge of previous exercises to understand what is going on. Although within the exercises, which can be access with the tabs above, you need to solve the tasks in the given order. If you are stuck at a task you always can get the sample solution to proceed.    
+
+ 
+
+## Exercise 1 -- Background on the Global Automotive Industry
+
+Hashmi and van Biesebroeck analyze the relationship between market structure and innovation in the automotive industry. In the first exercise we want to get a general overview of this industry.  
+In part a) we look at the aggregated R&D expenditures of different industries. We will see that the automotive industry is one of the most innovative. In part b) we look at sales data to analyze how the structure of the automobile market has evolved over time. As a measure of innovation we use the number of patent applications by a firm. In part c) we will see why this is appropriate. There we will also calculate summary statistics on patent data which will be used later.
+
+
+### a) R&D expenditures and Innovation
+
+The automotive industry is one of the most innovative industries. Thirteen percent of all Research and Development (R&D) in OECD countries was by firms in the Motor Vehicle industry in 2003. The industry has seen a significant consolidation process in the last few decades, with a climax in the 1990s. Notable events of this process have been the mergers between Daimler-Benz and Chrysler in 1998, which later was ended through the sale of Chrysler, the merger between Hyundai and Kia in 1998, the strategic partnership between Renault and Nissan founded in 1999, and the takeovers by the Rover Group by BMW in 1994, or Volvo by Ford (1999). Hashmi and Van Biesebroeck (2009) argue that this consolidation process is on the one hand the result of increased competition, which has made it though for small firms to survive by themselves. On the other hand the consolidations intensify competition as the emerging large-scale enterprises are highly research intensive. 
+  
+In a first task, we will use data from the OECD to analyze R&D expenditures by industry in selected countries. To replicate the results of the paper, and also to confer with the time frame of our sales and patent panel data sets, we use R&D expenditures from 2006. 
+To be able to work with a certain data set we have to load it into the R work space. The `csv` (Comma-separated values)-table containing the R&D expenditures is named `table1.csv`. The R function `read.csv()` reads in a data set of this format.  
+Below is the first R code chunk of this problem set. In this first task you only have to remove the `#` in front of the code in the first line and exchange the three dots (`...`) with the above mentioned command to read in the wanted `csv`-file. Click `check` afterwards to execute the code and to check if your solution is correct.  
+If you have problems with solving this task, you can get a `hint`, by clicking on the respective button. You also can click `solution` to get the sample solution.
+
+
+```{r "1"}
+# t1=...("table1.csv")
+t1=read.csv("table1.csv")
+
+```
+
+The table is now in the work space as an object with the name `t1`. More precisely, `read.csv()` converted the `csv`-table into a so-called `data frame`, which is R's own table format. To view the data frame just write the name of it in the next chunk.  
+  
+```{r "1__2"}
+# Type in the name of the object to display it. Either delete this comment and then write it in line 1 or click the Enter key and then write it in the next line.
+t1
+
+```
+**Table 1:** R&D expenditures by industry  in selected countries, 2006 (in PPP Billion dollar). Source: Hashmi, Van Biesebroeck Page 194  
+
+<br>
+
+The automotive industry is on first place in R&D spending in Japan and Germany, on second place in Korea and France and in fourth place in the United States.   
+Overall, the automotive industry in the five countries spent more than 57 billion dollars on R&D in 2006.  
+
+<br>
+
+By moving the mouse pointer over the header of a table column you receive additional information about the respective variable through a hover box. Try this with Table 1 and then complete the following sentence in the correct way: 
+
+Quiz: The variable Sector represents the sector classification according to the ...
+
+- Global Industry Classification Standard (GICS) [ ]
+
+- International Standard Industrial Classification of All Economic Activities (ISIC) [x]
+
+- Statistical Classification of Economic Activities in the European Community (NACE) [ ]
+
+
+
+info("OECD data") # Run this line (Strg-Enter) to show info
+
+Hashmi and Van Biesebroeck (2009) argue that "at the most fundamental level, two features are necessary for innovation to take place. First, firms need to be able to finance innovation, i.e. there needs to be a margin between price and marginal cost. Second, firms need to have an incentive to innovate, i.e. innovation has to increase expected profits."   
+Berry et al. (1995) show with demand estimates that there are indeed high price-marginal cost markups in the automobile industry:  
+    "In 1990, the average markup is $3753 and the average ratio of markup to  retail price is 0.239. [...]
+    The models with the lowest markups are the Mazda ($801), Sentra ($880),
+    and Escort ($1077). At the other extreme, the Lexus and BMW
+    have estimated markups of $9030 and $10975 respectively. 
+    In general, markups rise almost monotonically with price." (Page 43) 
+
+Contrary to this, Tesla Motors reported net losses for each fiscal year between 2008 and 2015 and still was able to aggressively finance innovation efforts. For the fiscal year 2015, Tesla reported a net loss of 888.66 million U.S. dollars. The R&D expenses in the same fiscal year were at 717.9 million U.S. dollars, an increase from $464.7 million for the year ended December 31, 2014 (Tesla 2016). The structural model by Hashmi and Van Biesebroeck doesn't account for entrants like Tesla and only considers the big oligopolists.  
+  
+
+Using R&D expenditures seems like a logical choice as proxy for the innovation activities of automotive firms. Unfortunately, data on R&D expenditures on firm-level only became available in recent years "through consolidated global accounts and that too is not available for all firms" (paper, page 194). We thus have to look for a different proxy for innovation.  
+Goettler and Gordon (2011) study the relationship between competition and innovation in the microprocessor industry with the duopolists Intel and AMD. Here innovation can be measured directly as the improvement in performance on CPU benchmark tasks. This is not possible in the automotive industry as consumers value many different product characteristics. In such cases, patents are often used as proxy for innovation. A study by Griliches (1990) finds a "strong relationship between patent numbers and R&D expenditures in the cross-sectional dimension, implying that patents are a good indicator of differences in inventive activity across different firms". We thus use the number of patent applications as proxy for innovation. More than 50000 patents were awarded in the 25 year sample period to the thirteen firms we will consider in our analysis.  
+In the next part we will take a closer look at the market structure in the automobile industry. 
+
+
+### b) Market Structure
+
+Building cars is a complex business. Only a few countries in the world have the designing, engineering and manufacturing capabilities to build automobiles from scratch. One source of complexity is that the production needs thousands of parts from a large number of suppliers. The dominant car markets for large parts of the 20th century were Europe and North America. Only in the last decade, the Asian-Pacific market became relevant to the industry with the rapid economic growth in China and India. Overall the industry is concentrated globally, but home markets are still most important for the companies. Volkswagen sells most of its cars in Europe, the same holds for General Motors and North America. Only for Japanese manufacturers this is different. Honda, as well as Toyota, sell more cars in the U.S. than on their home market Japan (Kallstrom 2015). In this exercise we take a look at the number of vehicles sold worldwide and the implications from these for our econometric model. The sales data were obtained by Hashmi and Van Biesebroeck from the [Ward's Automotive Yearbooks](http://wardsauto.com/wards-automotive-yearbook), the [Ward's Info Bank](http://infobank.wardsauto.com/) and the [Automotive News data center](http://www.autonews.com/section/datacenter).
+
+#### Data Exploration
+
+
+We now load the data set which contains world wide sales on firm level into the work space. The authors, Hashmi and Van Biesebroeck, used the statistical software package STATA to conduct their studies, thus the data is in STATA's `dta` format.  
+To read in this data format we need the R package `foreign` with the command `read.dta()`. In general `foreign` allows to read and write data that was stored by *foreign* statistical programs like SAS or STATA. For more informations on the package and `read.dta()` consider the following info box:
+
+info("read.dta() and the package foreign") # Run this line (Strg-Enter) to show info
+
+**Task:** Use `read.dta()` to read in the data set `firm-level.dta` and assign it to a variable `firmlevel`. Don't forget to click `check` after you entered the command. If you need help, click the `hint` button. 
+
+```{r "1__4"}
+# This task is similar to the very first where you used read.csv().
+firmlevel=read.dta("firm-level.dta")
+
+```
+
+The data set `firmlevel` has 410 observations and six variables. This information can be retrieved with the function `dim()`, which returns the *dimensions* of an object. For our data frame `firmlevel` the output is a vector with the number of rows (observations) and the number of columns (variables). In the code chunk below you can try this command optionally.  
+To obtain the variable names of `firmlevel` use the function `names()`. Try this also optionally in this chunk.
+
+```{r "1__5",optional=TRUE}
+# Enter the above mentioned commands to explore the data set.
+```
+
+Another function to explore the data set is `head()`. It returns the first six observations of an object. This is especially helpful if the data set has millions of rows.  
+  
+**Task:** Use `head()` on `firmlevel` to obtain an overview of the data. If you have not used the previous chunk you first have to click the `edit`button.
+
+```{r "1__6"}
+#
+head(firmlevel)
+```
+
+
+The first six observations are all by BMW for the years 1980 to 1985. For each year we have the price of the average vehicle by this firm in thousand 1983 U.S. dollar (`price`), the number of vehicles sold worldwide (`sales`), the number of patents applied for (`pat_app`) and the number of patents granted (`pat_grant`).  
+For the years 1980 and 1981 we don't have data on prices and sales, we thus from now on consider 1982 as first year of our sample. Overall each observation represents a year-firm combination. In econometrics we call this type of data, which has multiple dimensions (here two: `time` and `firm`), *panel data*.  
+  
+We now would like to know which firms besides BMW are contained in `firmlevel`. The subset operator `$` enables to easily extract variables of a data frame. The command `firmlevel$price` for example, returns the column `price` of the data frame `firmlevel`. Doing this with the variable `firm` will result in many duplicate elements as we have for example 28 observations with BMW as manufacturer in the data set (one observation for each year between 1980 and 2007). To only receive unique rows of firm names we use the function `unique()`. 
+
+**Task:** Use the function `unique()` and the subset operator `$` to obtain the firms contained in the data set.
+
+```{r "1__7"}
+# unique(...$...)
+unique(firmlevel$firm)
+
+```
+
+
+We have these fifteen firms in our data set. Of course there are clearly more than fifteen firms in the automotive industry. But with the inclusion criterion "at least 1 percent of global sales in any year" in the time frame 1982 to 2006 we are left with only fourteen firms. The fifteenth "firm" is named `OTHER` and represents all firms which failed the criterion, i.e. had at least one year with a market share below 1 percent. (paper, page 194)
+
+#### Market Shares
+
+We now calculate market shares in the initial and final year of the sample (1982 and 2006, respectively).  
+
+**Task:** Use the function `filter()` from the package `dplyr` to return only observations of the year 1982 and save them as `firm1982`. If you are not familiar with this command take a look at the info box below.
+
+```{r "1__8"}
+# firm1982 = ...
+firm1982 = filter(firmlevel, year==1982)
+
+```
+
+info("filter()") # Run this line (Strg-Enter) to show info
+
+
+**Task:** Now calculate the global sales in 1982 `global_sales1982` with the function `sum()`. Use the data set `firm1982` that was created in the previous chunk and remember how to use the subset operator `$`.
+
+```{r "1__10"}
+# global_sales1982=...
+global_sales1982=sum(firm1982$sales)
+
+
+
+# show global_sales1982:
+global_sales1982
+```
+
+In 1982, around 37.34 million cars were sold worldwide. In the next chunk we calculate the market shares of the fourteen firms in that year.
+
+**Task:** Click `check` to calculate the market shares of the firms in 1982. 
+
+```{r "1__11"}
+# market shares in 1982
+eighty_two = filter(firmlevel, year==1982) %>%
+              mutate(market_share = 100*sales/global_sales1982) %>%
+          # mutate() adds new columns that are functions of existing columns
+              select(firm, sales, market_share) 
+          # select() selects columns by name
+
+eighty_two # show the data frame
+```
+
+We now do the same calculations for the year 2006, which is the last year of our 25-year sample period. Use the previous chunks as template and do the following steps:  
+(**Your task**):  
+  1. Create the data frame `firm2006`.  
+  2. Create an object `global_sales2006` with the global sales in 2006.  
+  3. Create `o_six`, a data frame that contains the fourteen firm names, the sales and market shares in 2006. Use the `dplyr` functions `filter()`, `mutate()`and `select()` for this.  
+  
+If you are not familiar with `mutate()` and `select()` consider the following info box:
+
+info("mutate() and select()") # Run this line (Strg-Enter) to show info
+
+```{r "1__14"}
+# global sales in 2006
+# firm2006=filter(firmlevel, ...)
+# global_sales2006=sum(...$...)
+
+# market shares in 2006
+# o_six = filter(firmlevel, year==...) %>%
+#          mutate(market_share = 100*sales/global_sales2006) %>% 
+#          select(..., sales, ...)
+
+
+firm2006=filter(firmlevel, year==2006)
+global_sales2006=sum(firm2006$sales)
+
+o_six = filter(firmlevel, year==2006) %>%
+          mutate(market_share = 100*sales/global_sales2006) %>% 
+          select(firm, sales, market_share)
+
+```
+
+
+
+We now merge the tables `eighty_two` and `o_six` to get an overview on how the market structure of the industry changed from the first year of the sample to the last year. Just click `check`.
+
+
+```{r "1__15"}
+
+# merge by firm
+# all.x=TRUE to have Chrysler in the Table.
+table2 = merge(eighty_two, o_six, by="firm", all.x=TRUE)
+
+# get nice column names
+colnames(table2)=c("Firm", "Sales1982", "Market Share 1982 in %",
+                   "Sales2006", "Market Share 2006 in %")
+
+# arrange by 1982 sales
+table2 = arrange(table2, desc(Sales1982))
+
+table2
+```
+
+**Table 2:** Market shares in the initial and final year of the sample. Source: Page 194  
+
+This table shows that the market structure of the automotive industry became more symmetric. The largest firms in 1982 (GM, Ford) lost market shares, while smaller firms like Hyundai or Suzuki increased their market shares heavily. It is apparent that European manufacturers developed much worse than manufacturers from Asia. PSA (Peugeot Societe Anonyme) increased its market share by only one-tenth, while Renault and Fiat even lost market shares. Honda almost doubled its market share, from 2.7 percent to 5.1 percent. Hyundai increased its market share by a factor of more than 20, from 0.24 percent to 5.4 percent.  
+In the next part we will use more advanced functions from the package `dplyr` to calculate the market shares in a much faster way. We will also visualize the sales and market shares over the sample period.
+
+## Exercise 1.1 -- Market Shares with dplyr
+
+
+With the function `group_by()` from `dplyr` we can calculate the market shares in different years much faster than in the previous chunks. Just click `check` to calculate the market share of each firm in every year of the sample period.  
+
+
+```{r "1_1"}
+firmlevel=read.dta("firm-level.dta")
+
+
+firmlevel_1 = filter(firmlevel, year > 1981, year < 2007) %>% 
+                    # group by year
+                group_by(year) %>% 
+                    # add the variable mkt_share to the data frame
+                mutate(mkt_share=sales/sum(sales)*100)
+```
+
+
+Next we create an area plot of the market shares with the package `ggplot2`. Just click `check` in the next code chunk. We will create quite a few `ggplot2` graphics in this problem set. For now it is enough for you to read through the commands and comments in the chunk below. Later there will be a comprehensive introduction to `ggplot2`, so that you are able to create own graphics with the package.  
+
+
+```{r "1_1__2",fig.height=10, fig.width=12}
+
+g_share = ggplot(firmlevel_1, aes(x=year, y=mkt_share, fill=firm)) + 
+          # aes (aesthetics): year mapped to x-axis, market share mapped to y-axis and 
+          # the firm mapped to the fill color of an area
+          geom_area(alpha=0.5, size=0.1, colour="black") + 
+          # colour transparent (alpha), thin (size) black line between areas
+          labs(x="Year", y="Market Share in %") 
+          # text for the x- and y-axis.
+
+g_share
+```
+**Figure 1.1:** Market shares over the complete sample. Source: Own graph. 
+
+With the package `plotly` we can make `ggplot2` graphs interactive. The function `ggplotly()` takes a `ggplot2` object and creates an interactive graph. Just click `check` to get an interactive version of the `ggplot2` object `g_share`.
+
+```{r "1_1__3",output='htmlwidget', widget='plotly'}
+library(plotly)
+ggplotly(g_share)
+```
+**Figure 1.2:** Interactive - Market shares over the complete sample. Source: Own graph. 
+
+You can hover your mouse pointer over the plot areas to get additional informations through a hoverbox. Unfortunately the market shares in the hoverbox are aggregated. E.g. the displayed market share of the second firm from below consists of the market share of the first firm from below plus its own market share.  
+
+When you have close look at the graph you will notice the white triangle in the graph, starting in 1997. This is the result of the merger between Daimler-Benz and Chrysler. From 1982 to 1997, Chrysler (second from above) and Daimler (third from above) were independent companies. From 1998 onwards until 2006 we account the sales of the DaimlerChrysler AG to our Daimler variable. In the econometric analysis we will treat this merger as an exogenous event (i.e. unexplained by the model), which reduces the number of firms in the sample from fourteen to thirteen.  
+The large blue area in the middle of the graph represents the combined market share of the fringe manufacturers. These firms sold 21 percent of all new cars worldwide in 1982 and only 17 percent in 2006. This is a consequence of the consolidation process that was described in part a).  The fourteen firms in the sample, which we consider as oligopolists, account for at least 75 percent market share in each year of the sample period. Hashmi and Van Biesebroeck argue that these firms also "almost surely account for an even larger fraction of innovation". (paper, page 195)
+
+An important property of an oligopoly is that each oligopolist is aware of the actions of the other participants in the market. Through this, strategic interactions can occur, i.e. oligopolists take into account the responses of the rivals. Game theoretic concepts like the Cournot or Bertrand competition then can be used to model the behaviour of the oligopolists in the equilibrium. In the structural model, price setting by the firms will be the outcome of a static Bertrand-Nash game between the fourteen oligopolists in the data set. For the dynamic problem we will consider an equilibrium concept called the *Markov Perfect Equilibrium (MPE)*. 
+
+
+Another way to visualize the market shares is by partitioning the plot into a matrix of panels. `facet_wrap(~firm)` creates a separate panel for each firm. Just click `check` to create the graphic.
+
+```{r "1_1__4",output='htmlwidget', widget='plotly'}
+g_facet = ggplot(firmlevel_1, aes(x=year, y=mkt_share)) + 
+            geom_line() +
+            facet_wrap(~firm) +
+            labs(x="Year", y="Market Share in %") 
+  
+ggplotly(g_facet)    
+```
+
+We can now can clearly see that there are distinctive changes in the competitive position for all firms in the sample period 1982-2006. Most notably big automakers like GM and Ford lost significant market shares between 1982 and 2006, while e.g. Hyundai, which was a fringe firm in the 1980s, increased its market share in the same period by a factor of more than 20. Hashmi and Van Biesebroeck argue that the pronounced changes in the competitive position for many firms "provides identifying power to estimate the structural parameters". (paper, page 192)
+
+#### Quiz: Changes in Market Structure
+
+Use the above interactive graph to answer the following questions.
+
+
+Quiz: 1. What was BMW's market share in percent in 2000?
+
+Answer: 1.39
+
+Quiz: 2. What was Honda's market share in percent in 1982?
+
+Answer: 2.72
+
+
+To conclude this part of the exercise we now create an area plot of the total sales over the sample period. Just click `check`.
+
+```{r "1_1__5",output='htmlwidget', widget='plotly'}
+g_sales = ggplot(filter(firmlevel_1), 
+                 aes(x=year, y=sales, fill=firm)) + 
+          geom_area(alpha=0.5, size=0.1, colour="black") +
+          labs(x="Year", y="Sales") + 
+          guides(fill = guide_legend(reverse=TRUE))
+
+ggplotly(g_sales)
+```
+
+
+
+The global sales increased from 37.33 million vehicles in 1982 to 69.43 million in 2006.
+
+
+### c) Measure of Innovation: Patent Applications
+
+As mentioned in part a), we are not able to use R&D expenditures as proxy for innovation. Instead we use the number of patents a firm applies for. A patent can be interpreted as a legal monopoly that has been granted for a limited time from the policy maker in exchange for the disclosure of all the details of the respective invention. It enables the inventor to use and sell his invention exclusively.  
+For a more detailed description of patents and also examples in the automobile sector take a look at the info box below.
+
+info("Patents") # Run this line (Strg-Enter) to show info
+
+We now calculate summary statistics on patent applications (`pat_app`), `sales`, and the vehicle prices in 1983 U.S. dollars (`price`), for the fourteen firms over the 25 year sample period. Just click `check`.
+
+```{r "1_1__6"}
+t3=filter(firmlevel, firm != "OTHER", year<2007, year>1981) 
+t3=select(t3, pat_app, sales, price)
+t3[is.na(t3)]=0 # set NA (not available)=0 
+
+descriptive.fun = function(x) {
+      return(c(Mean = mean(x), SD = sd(x), Percentile = quantile(x, 0.1), Percentile = quantile(x, 0.9)))
+}
+
+```
+
+The above defined function `descriptive.fun()` returns mean, standard deviation and the 10th and 90th percentiles. We now use the function `sapply()` to create summary statistics on the three variables.  
+
+**Task:**  Use `sapply()` with `descriptive.fun()` to calculate the summary statistics and save them as `table3`.
+
+info("sapply()") # Run this line (Strg-Enter) to show info
+
+```{r "1_1__7"}
+# table3 = sapply(t3, ...)
+
+
+table3 = sapply(t3, descriptive.fun)
+
+
+
+# Display table3 as data frame (sapply creates matrices)
+# we also add the rownames as a variable
+add_rownames(as.data.frame(table3), "Statistic")
+```
+  
+**Table 3:** Summary statistics. Source: Page 195. 
+
+The firms in the data set are highly innovative, with an average of 255 patent applications per year. The variation in innovative activities is quite large with a standard deviation of 255. The average vehicle sells at $11300 in 1983 U.S. dollars and the average annual sales are 3.2 million cars.
+
+#### Data Sets
+
+Hashmi and Van Biesebroeck use U.S. new vehicle data from Amil Petrin's ["Quantifying the Benefits of New Products: The Case of the Minivan""](http://www.journals.uchicago.edu/doi/abs/10.1086/340779) which can be retrieved from [https://sites.google.com/a/umn.edu/amil-petrin/home/Available-Programs](https://sites.google.com/a/umn.edu/amil-petrin/home/Available-Programs).  
+For the EU they take a data set from Goldberg and Verboven's ["The Evolution of Price Dispersion in the European Car Market""](https://www.jstor.org/stable/2695910?seq=1#page_scan_tab_contents) which is available at [https://sites.google.com/site/frankverbo/data-and-software/data-set-on-the-european-car-market](https://sites.google.com/site/frankverbo/data-and-software/data-set-on-the-european-car-market).
+
+In Appendix 2 we take a closer look at Verboven's data set which contains sales data and data on different car characteristics at the (car) model level. For Hashmi and Van Biesebroeck's model we only use the following three product characteristics:
+
+- size of the car (length $\times$ width $\times$ height)
+- horsepower by weight (hpwt)  
+- fuel efficiency (miles per $)  
+
+
+
+## Exercise 2 -- A First Look at the Relationship between Competition and Innovation
+
+We now use our firm-level data set `firmlevel` and look at the empirical relationship between measures of competition and innovation. In part a) we consider the relationship at the market-level, i.e. we aggregate the firm-level observations. In part b) we will look at the relationship at the firm-level.
+
+### a) First plot: market-level information  
+
+We first look at the empirical relationship between competition and innovation at the market-level. As discussed in exercise 1 we use the number of patent applications as proxy for innovation. For the market-level this means that we consider the average number of patent applications across firms per million dollars of revenue. 
+A commonly accepted measure of market concentration, or more precise, a measure of the size of firms in relation to the industry, is the **Herfindahl-Hirschman index (HHI)**. It is defined as the sum of the squares of the market shares of the firms in an industry:
+$$ HHI = \sum_{i=1}^{N} s_i^2 $$
+where $N$ is the number of firms in the market and $s_i$ is the market share of firm $i \in \{1,...,N\}$. We use the $HHI$ as proxy for competition.
+
+info("Herfindahl-Hirschman index (HHI)") # Run this line (Strg-Enter) to show info
+
+We now use the firm-level data set from Exercise 1 and calculate the $HHI$ and the number of patent applications per revenue at the market-level.
+
+#### Loading the data set
+
+Just click `check` to read in the data set `firm-level.dta`. We also again filter out observations that are not part of the sample period 1982-2005.
+
+```{r "2"}
+library(foreign) 
+firmlevel=read.dta("firm-level.dta")
+
+library(dplyr)
+scatter_1=filter(firmlevel, year>1981, year<2006)
+```
+
+To calculate the $HHI$ in a given year we need the market's total sales in the respective year. With the functions we already used we could, e.g. calculate the total sales in 1983 as `TS1983=sum(filter(firmlevel, year==1983)$sales)`. The $HHI$ for 1983 then is `sum((sales/TS1983)^2)`. Doing this for every year is of course very cumbersome. The `dplyr` functions `group_by()` and `summarise()` relieve such calculations:
+
+```{r "2__2"}
+scatter_HHI=group_by(scatter_1, year) %>% 
+  summarise(TS=sum(sales), HHI=sum((sales/TS)^2))
+```
+
+We also have to aggregate the firm-level patent data to the market level. To account for the growing market over time we consider patent applications per revenue. 
+
+Overall we calculate with the commands `group_by()` and `summarise()`:  
+- the total sales in each year `TS`  
+- the total revenue in each year `TR`  
+- the Herfindahl-Index in each year `HHI`  
+- the total number of patents `Tpat`  
+- the average number of patents per revenue `Mpat` 
+
+Just click `check`.
+
+```{r "2__3"}
+# first we calculate the revenue for every firm
+scatter_2=mutate(scatter_1, R=sales*price) #revenue
+
+# now we aggregate to the market level:
+# market share=sales/sum(sales)
+scatter_3=group_by(scatter_2, year) %>% 
+  summarise(TS=sum(sales),  # total sales per year
+            TR=sum(R), # total revenue per year
+            HHI=sum((sales/TS)^2), # HHI (market concentration) per year
+            Tpat=sum(pat_app), # total number of patents per year
+            Mpat=1000000*mean(pat_app/R)) # mean patent apps per sales in million dollar
+```
+
+info("dplyr: group_by() %>% summarise()") # Run this line (Strg-Enter) to show info
+
+
+We now use the package `ggplot2` with the function `geom_point()` to create a scatter plot that shows the relationship between the $HHI$ and the average number of patents per revenue.  
+
+**Task:** Create a `ggplot2` scatter plot with `geom_point` in which the horizontal axis shows the market concentration measure `HHI` and the vertical axis the average number of patents per revenue `Mpat`. You only have to uncomment the command and fill in the correct variables. `aes()` creates an *aesthetic*, which is a mapping of the variables to the different parts of the plot.
+
+info("ggplot2") # Run this line (Strg-Enter) to show info
+
+
+```{r "2__8"}
+# ggplot(scatter_3, aes(x=..., y=...)) + geom_point()
+
+ggplot(scatter_3, aes(x=HHI, y=Mpat)) + geom_point()
+
+```
+
+First of all, all market structures in the sample have a $HHI$ below 0.125. This means that they are considered unconcentrated (cf. the info box about the HHI above).
+Further, lower concentration, i.e. more competition, seems to be associated with higher innovation.
+
+We now add the year of the observation as third dimension to the scatterplot. We do this by adding a colour aesthetic to the plot. The colour of the plot points in the subsequent plot signal the sample period from 1982 (blue) to 2006 (red). This enables us to discover time series variation. Just click `check` to create the scatter plot. Again we make the plot interactive with `plotly`.
+ 
+
+```{r "2__9",output='htmlwidget', widget='plotly'}
+library(ggplot2)
+
+scatter_market <- ggplot(scatter_3, aes(x=HHI, y=Mpat)) + geom_point(aes(colour = year)) + scale_colour_gradient(low = "blue", high = "red")
+
+library(plotly)
+# use ggplotly() to make the ggplot2 graph interactive
+ggplotly(scatter_market)
+```
+
+The $HHI$ decreased from the year 1982 to the year 2006. With the exception of the year 2004, where patenting per revenue is lowest in the sample, patenting has increased over time. 
+Overall, this means that concentration has fallen over time while patenting has risen. We thus don't know if the negative relationship between the competition proxy $HHI$ and the innovation proxy $Mpat$ is causal or relies entirely on the time effects.  
+
+
+
+We now add another level to our descriptive analysis of the relationship. We regress the average number of patents `Mpat` on the Herfindahl-Hirschman index `HHI`. 
+The mathematical formulation looks the following way:
+ 
+$$\tag{2a 1} \text{Mpat}_i = \beta_0 + \beta_1 \text{HHI}_i + \varepsilon_i $$
+
+The index $i$ indicates the observation. We don't have a time index, i.e. we use our panel data set as pooled panel.
+
+**Task:** Click *check* to carry out the regression defined in equation (2a 1) with the function `lm()`.
+
+```{r "2__10"}
+# The lm() command
+lin_reg=lm(data=scatter_3, "Mpat~HHI")
+```
+
+
+
+
+info("Linear Regression with lm()") # Run this line (Strg-Enter) to show info
+
+**Task**: To display the result of the regression we use the function `showreg()` from the package `regtools`. Just click `check`. 
+
+
+```{r "2__11"}
+library(regtools)
+showreg(list(lin_reg), custom.model.names = c("Linear Model"),
+        digits=2, stars=c(0.01,0.05,0.1))
+```
+<br>
+  
+  
+We use this regression results only in a descriptive way. This means that we don't look after the assumptions of the *Classical Linear Regression Model*. When fulfilled, these assumptions would ensure the unbiasedness and consistency of the OLS estimator.  
+The estimate of $\beta_1$ confirms what we have already seen in the scatter plot, namely there seems to be a negative relationship between `HHI` and `Mpat`. The coefficient is also statistically significant.  
+
+Throughout the problem set we use the following significance levels:  
+- significant on the $0.01$ level (high significance):    ***    
+- significant on the $0.05$ level (medium significance):  **    
+- significant on the $0.10$ level (low significance):    *   
+
+This is akin to the way Hashmi and Van Biesbroeck denote the significance levels in their paper.  
+
+
+Next we add a line with the *fitted values* (cf. info box on Linear Regression above) of `lin_reg` to the scatter plot.
+
+
+**Task:** Just click `check`.
+
+```{r "2__12"}
+# add the fitted values to the data
+scatter_3$lin_reg=lin_reg$fitted.values
+# 
+lin_line=scatter_market+geom_line(data=scatter_3, aes(y=lin_reg))
+lin_line
+```
+
+
+We then also consider the following specification with a quadratic term:
+$$\tag{2a 2} \text{Mpat}_i = \beta_0 + \beta_1 \text{HHI}_i + \beta_2 \text{HHI}^2_i + \varepsilon_i $$
+
+
+We conduct the same steps as before in the linear specification for the model defined by equation (2a 2): First we run the regression, then we add the fitted line to the scatter plot. Just click `check`.
+
+```{r "2__13"}
+# Polynomial Regression:
+quad_reg=lm(data=scatter_3, "Mpat~HHI+I(HHI^2)")
+
+showreg(list(quad_reg), custom.model.names = c("Quadratic Model"),
+        digits=2, stars=c(0.01,0.05,0.1))
+
+scatter_3$quad_reg=quad_reg$fitted.values
+
+quad_line=scatter_market+geom_line(data=scatter_3, aes(y=quad_reg))
+
+quad_line
+```
+
+Intuitively the fit of this line seems a bit better than the linear one. Maybe we can validate this by comparing the regression results of both specifications. `showreg()` allows us to display the regression results side by side. Just click `check`.
+
+```{r "2__14"}
+
+showreg(list(Linear=lin_reg, Quadratic=quad_reg), 
+        custom.model.names = c("Linear Model", "Quadratic Model"),
+        digits=2, stars=c(0.01,0.05,0.1))
+```
+
+Contrary to the linear model, the coefficients of the quadratic model are not significant.
+
+The $R^2$, also called *Coefficient of determination*, is higher for the quadratic specification. It is a measure of how well the regression line approximates the data points. For the quadratic specification it indicates that 26 percent of the variance in `Mpat` is explained by `HHI` and the quadratic term `I(HHI^2)`. For the linear specification 23 percent of the variance in `Mpat` is explained by `HHI`.  
+
+For an OLS regression, the $R^2$ is weakly increasing in the number of regressors in the model. The Adjusted $R^2$ accounts for that. It increases only if the additional term improves the model more than it would be expected by chance.  
+In the note block below we analyze why the regression results for the quadratic specification are not significant and why Hashmi and Van Biesebroeck come to a contrary result.
+
+
+By collapsing the firm-level data to the market-level we were only left with 24 observations (the number of years in the sample). 
+
+The linear HHI term in the fitted quadratic line becomes significant when we don't summarize and instead keep all observations, i.e. use `mutate()` instead of `summarise()`:  
+
+```{r "2__15",optional=TRUE}
+scatter_mut=group_by(scatter_2, year) %>% 
+     mutate(TS=sum(sales), TR=sum(R), HHI=sum((sales/TS)^2), 
+            HHIc=sum((R/TR)^2),
+            Tpat=sum(pat_app), Mpat=1000000*mean(pat_app/R))
+
+quad_reg_mutate=lm(data=scatter_mut, "Mpat~HHI+I(HHI^2)")
+
+showreg(list(quad_reg_mutate=quad_reg_mutate), 
+        digits=2, stars=c(0.01,0.05,0.1))
+```
+
+This is the regression that Hashmi and Van Biesebroeck conducted in the paper.  
+Now the negative term on $HHI$ is statistically significant as stated by Hashmi and Van Biesebroeck. They make the case that "the pattern is weak, but the negative coefficient on the linear HHI term in the fitted [...] line is highly significant". (paper, page 196)
+
+It is also possible to get the same coefficients for the summarized observations with the weight option of `lm()`:
+
+```{r "2__16",optional=TRUE}
+# Polynomial Regression:
+quad_reg_weighted=lm(data=scatter_3, "Mpat~HHI+I(HHI^2)", weight=c(rep(15,16),rep(14,8)))
+# weights: 15 manufacturers in the first 16 years (1982 to 1997), then Chrysler merged with Daimler
+# -> 14 manufacturers from 1998 to 2005
+showreg(list(quad_reg_weighted),
+        digits=2, stars=c(0.01,0.05,0.1))
+```
+
+The difference occurs because we have different numbers of observations per year in the data set. For the first 16 years of the sample period (1982 to 1997) we have data on 15 manufacturers. For the remaining 14 years (1998 to 2005) we only have 14 manufacturers. In 1998 Daimler and Chrysler merged. We thus have from that year onwards one manufacturer less in the sample. The command `weight=c(rep(15,16),rep(14,8)))` accounts for that: 15 manufacturers in the first 16 years, then 14 manufacturers in the next 8 years.  
+
+
+
+### b) Second plot: firm-level   
+
+The analysis on the market level hides the underlying variation on the firm level. The number of patent applications obviously differs widely across firms.   
+As proxy for innovation we again take the number of patent applications, but this time on the firm-level. At this level we can't use market concentration as measure of competition. Instead we consider firm size in terms of revenue as measure of competition.
+
+**Task:** Create a `ggplot2` scatter plot with `geom_point` in which the horizontal axis shows a firm's revenue `R` and the vertical axis its number of patent applications `pat_app`. A third dimension is added by setting the `colour` of the data points equal to the `year` of the observation. The required data is stored in the data frame `scatter_2`. You only have to uncomment the provided code and replace the `...` with the correct objects or variables.
+
+```{r "2__17",output='htmlwidget', widget='plotly'}
+# scatter_firm <- ggplot(data=..., aes(x=..., y=...)) + 
+#                    geom_point(aes(colour = ...), size=0.2) + 
+#                    scale_colour_gradient(low = "blue", high = "red")
+
+scatter_firm <- ggplot(data=scatter_2, aes(x=R, y=pat_app)) + 
+                    geom_point(aes(colour = year), size=0.2) + 
+                    scale_colour_gradient(low = "blue", high = "red")
+
+ggplotly(scatter_firm)
+
+```
+
+This scatter plot is harder to interpret than the one with the market-level observations. It seems that smallest firms patent the least, while the firms in the middle of the size distribution are the most innovative.  
+
+We again want to add a fitted line based on a linear regression to the scatter plot. More explicit consider the following polynomial equation with **year fixed effects**:
+$$\tag{2b 1} \text{Patent Applications}_{it} = \beta_0 + \beta_1 \text{Revenue}_{it} + \beta_2 \text{Revenue}_{it}^2 + \beta_3 \text{Revenue}_{it}^3 + \beta_4 \cdot \text{year}_t + \varepsilon_{it} $$
+where $t \in [1983,...,2005]$ is the year of the observation and $i \in [1,...15]$ the manufacturer.
+If you are interested in the theory of the Fixed Effects regression look at the info box below.
+
+info("Fixed Effects") # Run this line (Strg-Enter) to show info
+
+The year fixed effects absorb anything that is year specific but constant across firms. One example of such an effect is the increasing rate of patenting over time.
+
+We now look at three regressions: `reg2` is an OLS regression without considering fixed effects, `fe_reg` is a Fixed Effects regression conducted with the function `felm()` from the package `lfe`. We also create a Dummy Variable regression `dummy_reg` with year dummies and expect that the coefficients to be equal to the coefficients of the fixed effects regression.
+Just click `check`.
+```{r "2__18"}
+reg2=lm(data=scatter_2, pat_app~R+I(R^2)+I(R^3))
+library(lfe)
+fe_reg=felm(data=scatter_2, pat_app~R+I(R^2)+I(R^3) | year)
+dummy_reg=lm(data=scatter_2, pat_app~R+I(R^2)+I(R^3)+factor(year))
+
+library(regtools)
+showreg(list(OLS=reg2, FixedEffects=fe_reg, Dummy=dummy_reg), 
+        custom.model.names = c("OLS", "Fixed Effects", "Dummy"),
+        digits=8, stars=c(0.01,0.05,0.1))
+```
+
+
+Indeed, the Fixed Effects and Dummy Variable regressions have the same coefficients. As expected, the Fixed Effects results don't contain an intercept (this is because of the within transformation which was described before). 
+We now put the fitted line of the Dummy Variable regression into the scatterplot.
+
+```{r "2__19"}
+g1=ggplot(scatter_2, aes(y=pat_app, x=R))+geom_point(shape=1)+geom_smooth(aes(y=dummy_reg$fitted.values))
+
+
+plot(g1)
+```
+
+
+
+info("Fixed Effects with with felm()") # Run this line (Strg-Enter) to show info
+
+
+The relationship is inverted U-shaped. The smallest firms patent the least, while the most innovative firms are those in the middle of the size distribution.  Aghion et. al (2005) find the same patterns for U.K. manufacturing firms. They explain the inverted U-shape with the opposing "escape-competition-" and "Schumpetarian-effects". 
+The escape-competition effect means that firms that operate in a competitive market have incentives to innovate in order to escape from competition and subsequently enjoy higher market shares. Alternatively, firms that earn monopoly rents have higher incentives to innovate to preserve their market position and discourage potential entrants. These two opposing forces lead to the inverted-U shape. Aghion et. al (2005) argue that "the escape competition effect dominates for low initial levels of competition, whereas the Schumpeterian effect dominates at higher levels of competition."  
+
+The patterns that we have found in this exercise are only descriptive, as we only looked at empirical relationships in the raw data. In the next exercise we will define a structural model of firm behavior and industry competition. This will enable us to gauge whether the mechanisms leading up to the inverted U-shape are consistent with the interpretation of Aghion et. al (2005).
+
+## Exercise 3 -- The Structural Model
+
+In this exercise the *structural model* is defined. It is mainly a theoretic exercise with a few code illustrations, that you can skip if you are only interested in the economic findings of the paper.  
+First of all, we define what is meant by the term *structural model*. According to Reiss (2007), "today economists refer to models that combine explicit economic theories with statistical models as structural econometric models."  
+In Exercise 2 where we regressed the HHI on the number of patents we did not have an underlying economic theory. The equations that where defined there thus had no explicit economic interpretation. These type of models are called *non-structural*, or *descriptive* and are used when there is little economic theory on which to build.  
+What follows is the definition of a theoretical model of the automotive industry, where oligopolists make optimal strategic decisions over investment in R&D given the strategies of their competitors. 
+
+
+In our structural model each firm produces only one differentiated car model. This (car) model is solely characterized by the firm's relative quality level $\xi$. The consumer then only trades off between price $p$ and the quality level $\xi$ when making a purchase decision.  
+A firm subsequently has two levers to improve its market share and profits: the price of its car and the quality level. The quality level can be improved by investment in R&D.  
+
+The price only affects the current profits. In a **static** Bertrand-Nash game the price is chosen strategically by the firm taking qualities of the rival products into account. On the other hand, investment in R&D can have long-lasting effects on product quality. A **dynamic** model thus is necessary, as costs and benefits of the R&D investments accumulate in different periods.
+
+Firms decide on their investment in R&D based on the current market structure, i.e. the current quality levels of all firms in the industry, and a private cost of innovation. They recognize that their innovation decisions collectively determines the evolution of the market structure.  
+
+In part A. of this exercise we cover the static problem where firms make pricing decisions based on the current market structure and the expected behaviour of their competitors. To obtain credible estimates of the demand and marginal cost parameters we here consider the more disaggregated level where each firm has different car models. We then have to aggregate these results to the firm level, as data on innovation efforts are only available at the firm level. This aggregation process is explained in part B.  
+In part C. the dynamic problem is introduced. Time here is discrete and firms are differentiated by their relative quality level. 
+
+
+### A. The Static Problem
+
+Demand is derived from a discrete choice model of individual consumer behaviour (cf. Berry (1994), Berry, Levinsohn, Pakes (1995)).  
+There are $n$ active firms, and firm $j$ produces $K_j$ different car models. Each of the $m$ consumers in the market buys **one** vehicle (discrete choice), i.e. the market size is $m$.     
+The utility for consumer $i$ from buying model $k_j$ is given by
+$$ u_{i k_j}=X_{k_j} \beta + \theta_p p_{k_j} + \widetilde{\xi}_{k_j} + \varepsilon_{i k_j} .$$
+
+The vector $X_{k_j}$ states model characteristics like size, power or fuel efficiency (miles per dollar), which are publicly observable, and $p_{k_j}$ is the observed price of model $k_j$.  $\widetilde{\xi}_{k_j}$ is a disturbance term that adds a dimension of unobservable quality differentiation of product $k_j$. The main idea of discrete choice is, that the possible choices are bundles of the product characteristics.
+
+#### Discrete Choice Example
+
+Let us consider the following example to get an understanding of such a model of consumer decision:
+```{r "3"}
+library(foreign)
+library(dplyr)
+modellevel=read.dta("model-level.dta")
+c3_97=filter(modellevel, country==3, year==1997) # country=3 is Germany
+
+bmw_mercedes_vw = filter(c3_97, model=="5" | model=="E" | model=="polo")
+bmw_mercedes_vw
+```
+
+A consumer decides between the BMW 5 Series, the Mercedes E Class and a VW Polo in 1997. Contrary to the models by Berry (1994) and Berry et. al. (BLP) (1995), where there is the option for the consumer to not buy a car, our consumer buys exactly one car. The vectors of vehicle characteristics $X_{bmw}, X_{merc}, X_{VW}$ are then given by:
+
+```{r "3__2"}
+X = select(bmw_mercedes_vw, model, price, size, hpwt, mpd)
+X
+```
+
+The two mid-sized luxury cars BMW 5 Series and Mercedes E Class are as expected very similar in terms of our vehicle characteristics. The E class is slightly bigger (length: 480.0cm, width: 180cm, height: 143cm vs. 477.5cm 180cm 143cm). The BMW has more horsepower by weight and also a better fuel efficiency (miles per dollar). The prices $p_{bmw}=22.63586$ and $p_{merc}=22.60608$ are deflated using the Harmonized Index of Consumer prices for Motor Cars in the euro area from Eurostat.  
+The VW Polo a supermini car is much smaller, much cheaper, has less horsepower by weight, and a better fuel efficiency.  
+Let us now assume that we know the true parameters $\theta_p$ and $\beta$. We also assume that $\widetilde{\xi}_{k_j}$ only is a brand preference with known values. We consider the following arbitrary values for parameters and brand preferences:
+
+```{r "3__3"}
+theta_p = c(-0.2) # parameter on the price
+beta = c(0.5, 0.3, 0.01) # parameters on size, hpwt, mpd
+X$brand_preference = c(0, 0.5, 0.8) # brand preferences for VW (0), BMW (0.5) and Mercedes (0.8)
+theta_p
+beta
+```
+
+We are now able to calculate the mean (or representative) utility of the three models $\delta_{k_j}$. It is the same for all consumers as the consumer index $i$ is not part of the equation:
+$$ \delta_{k_j} = X_{k_j} \beta + \theta_p p_{k_j} + \widetilde{\xi}_{k_j} $$
+
+
+```{r "3__4"}
+X =  mutate(X, Delta=price*theta_p+size*beta[1]+hpwt*beta[2]+mpd*beta[3]+brand_preference)
+select(X, model, Delta)
+```
+
+For this specification the mean utility of the VW Polo is the highest at 2.99, i.e. the average (or representative) consumer chooses this car. But the utility $u_{i k_j}$ of consumer $i$ also depends on the (idiosyncratic) preference shock $\varepsilon_{i k_j}$. So not all consumers are going to buy the VW Polo.
+
+Consider that only the (idiosyncratic) preference shock $\varepsilon_{i k_j}$ is dependent on the individual $i$, i.e. this is not a Random Coefficients Model like in BLP (1995).  
+In econometrics, the term "idiosyncratic error" is used to describe errors from panel data that changes over multiple dimensions. Here the error $\varepsilon_{i k_j}$ is dependent on the model $k_j$ and the individual consumer $i$. 
+ 
+Under the assumption that $\varepsilon_{i k_j}$ is i.i.d. Type 1 extreme value distributed this is a Conditional Logit Model (McFadden 1973). The expected market share for model $k_j$ then is
+$$\tag{3.1} \sigma_{k_j}=\frac{\exp(X_{k_j} \beta + \theta_p p_{k_j} + \widetilde{\xi}_{k_j})}{1+\sum_{l=1}^n \sum_{k_l} \exp(X_{k_l} \beta + \theta_p p_{k_l} + \widetilde{\xi}_{k_l})} =  \frac{\exp(\delta_{k_j})}{1+\sum_{l=1}^n \sum_{k_l} \exp(\delta_{k_l})} .$$
+The expected market share of product $k_j$ is the probability that it has the highest utility. The probability that the VW Polo has a higher utility than the 5 Series and the E Class is
+$$P(\delta_{{vw}}+\varepsilon_{i,vw} > \delta_{{bmw}}+\varepsilon_{i,bmw}) \cdot P(\delta_{{vw}}+\varepsilon_{i,vw} > \delta_{{merc}}+\varepsilon_{i,merc})$$
+
+Using the extreme value assumption for the disturbance terms leads after some calculations to equation (3.1). A proof of this can be found in Chapter 3.10. of "Discrete Choice Methods with Simulation"" by Train (2003).
+
+We now compute the market shares $\sigma_{k_{vw}}$, $\sigma_{k_{bmw}}$ and $\sigma_{k_{merc}}$ according to equation (3.1).
+
+```{r "3__5"}
+# first we calculate the numerator
+X = mutate(X, sigma_numerator=exp(Delta))
+# the denominator is the same for all models
+sigma_denominator=1+sum(exp(X$Delta))
+X = mutate(X, sigma=sigma_numerator/sigma_denominator)
+select(X, sigma)
+```
+
+These are the predicted market shares of the logit model by Berry (1994) for a market with these three models in 1997 and the given parameters and brand preferences. The VW Polo has a market share of 45 percent, the BMW 5 Series of 22 percent and the Mercedes E-class of 31 percent.  
+We now look at the model's price effects on market shares. The cross price effect is given by $\frac{\partial \sigma_{j}}{\partial p_{k}} = - \theta_p \sigma_k \sigma_j \quad \forall k \neq j$ and the own price effect by $\frac{\partial \sigma_{j}}{\partial p_{j}} = \theta_p \sigma_j (1-\sigma_j)$.  For a proof of these derivatives take a look at Rasmusen (2007). 
+The price elasticities of demand then are:
+$$\begin{eqnarray*}
+\eta_{j k} = \frac{\% \Delta \sigma_j}{\% \Delta p_k} = \frac{\partial \sigma_{j}}{\partial p_{k}} \frac{p_k}{s_j} = \begin{cases} 
+\theta_p p_j (1-\sigma_j)  & \text{for } k=j \\
+-\theta_p p_k \sigma_k  & \text{else } \end{cases}
+\end{eqnarray*}$$
+
+Let us increase the price of the Mercedes E Class by 10 percent and let's think about the effect of this on the market shares of all three models. The cross-price elasticity of the VW Polo with respect to the price of the E Class is $\eta_{vw,merc}=-\theta_p p_{merc} \sigma_{merc}$. The cross-price elasticity of the BMW 5 Series with respect to the price of the E Class is $\eta_{bmw,merc}=-\theta_p p_{merc} \sigma_{merc}$. So overall $\eta_{vw,merc}=\eta_{bmw,merc}$. This behaviour is of course unrealistic as we would expect that a price change for a large premium car like the Mercedes E Class would have a much bigger impact on its direct competitor, the BMW 5 Series, than on a supermini car like the VW Polo.  
+This standard behaviour of the multinomial logit model is often illustrated by the famous red-bus/blue-bus example brought up by McFadden (1973). An alternative to the logit model that circumvents this behaviour is the so-called random coefficients model. But Hashmi and Van Biesebroeck argue the logit model is sufficient as the "focus is on
+the effect of innovation at the firm level, which does not require detailed substitution patterns." (paper, page 196)
+
+We now go back to the main question of this section, namely how to estimate the demand parameters.
+
+#### Demand Equation
+
+Taking the logarithm of equation (3.1) and normalizing by a benchmark firm with vehicle quality 0, i.e. $X_{k_o} \beta + \widetilde{\xi}_{k_0}=0$, results in the following estimating equation for demand at the model level:
+
+$$ \tag{3.2} \ln \sigma_{k_j} - \ln \sigma_{k_o}=X_{k_j} \beta + \theta_p (p_{k_j}-p_{k_0}) + \widetilde{\xi}_{k_j} $$
+In Exercise 3.1. we will estimate this demand equation via OLS and Instrumental Variables.  
+For now, we move on to explain the remaining parts of the structural model.
+
+#### Supply Side
+
+On the supply side we have the following profit maximization problem for firm $j$:
+
+$$\tag{3.3} \pi_j(\overline{\xi}_j, \overline{\xi}_{-j}, \mathbf{p}_{-j}, m | \theta_p, \theta_c) = \max_{\mathbf{p}_{j}} \sum_{k_j=1}^{K_j} \underbrace{ \{ p_{k_j}-\mu_{k_j}(\xi_{k_j}|\theta_c) \}}_{\text{price - marginal cost}} \underbrace{ m \sigma_{k_j}(p_{k_j},p_{-k_j},\mathbf{p}_{-j}|\theta_p)}_{\text{expected demand for model}}$$
+$\overline{\xi}_j \equiv [\xi_1,\xi_2,...,\xi_{K_j}]$ is firm $j$'s state vector ($j$ produces $K_j$ models), where $\xi_{k_j} \equiv X_{k_j} \beta + \widetilde{\xi}_{k_j}$ combines all product characteristics of model $k_j$. 
+
+Firm $j$ maximizes, through a strategic setting of prices $\mathbf{p_j}=[p_1,...,p_{K_j}]$, the sum of the expected profits of its $K_j$ models. Strategic means that $j$ takes the states $\overline{\xi}_{-j} \equiv [\overline{\xi}_{1},...,\overline{\xi}_{j-1}, \overline{\xi}_{j+1},...,\overline{\xi}_{n}]$ and prices $\mathbf{p}_{-j} \equiv [\mathbf{p}_{1},...,\mathbf{p}_{j-1}, \mathbf{p}_{j+1},...,\mathbf{p}_{n}]$ of its $n-1$ rivals into account.
+
+With the marginal cost specification $\ln \mu_{k_j} = \exp( \theta_{c1} + \theta_{c2} \xi_{k_j} + \zeta_{k_j} )$ the first-order condition for model $k_j$ is
+
+$$\tag{3.4} p_{k_j} = \exp(\theta_{c1} + \theta_{c2} \xi_{k_j} + \zeta_{k_j} ) - \frac{1}{\theta_p (1-\sum_{k_j=1}^{K_j} \sigma_{k_j})}  .$$
+$\zeta_{k_j}$ is an unobservable shock , which is assumed to be i.i.d. across firms and over time with mean 0. 
+
+The above marginal cost specification is estimated by Hashmi and Van Biesebroeck. It is non-linear and thus harder to estimate. We instead consider the following constant marginal cost specification:
+
+$$\tag{3.5} p_{k_j} = \theta_{c} + \zeta_{k_j} - \frac{1}{\theta_p (1-\sum_{k_j=1}^{K_j} \sigma_{k_j})}  .$$
+
+The price of model $k_j$ consists of its marginal costs $\mu_{k_j}$  and an markup term  $\frac{1}{\theta_p (1-\sum_{k_j=1}^{K_j} \sigma_{k_j})}$. The markup term is firm-specific, i.e. the same for all models produced by one firm.
+
+### B. Aggregation to the Firm Level
+
+As mentioned before, Hashmi and Van Biesebroeck model that each firm produces only one differentiated product. This product is completely characterized by the firm's product quality. We thus have to aggregate the demand equation and the first-order condition for optimal price setting from the model level to the firm level.  
+
+The utility that consumer $i$ attains from buying the representative product of firm $j$ is
+
+$$ u_{i j}=\theta_p p_{j} + \xi_{j} + \varepsilon_{i j} .$$
+
+The observable and unobservable product characteristics for firm $j$, which were notated separately in the demand equation (3.1), are lumped together here into a single quality variable $\xi_j$. The price coefficient $\theta_p$ has the same interpretation as in the model-level demand equation.  
+With the same distributional assumptions on $\varepsilon_{ij}$ as before and the normalization we get: $\ln \sigma_{j} - \ln \sigma_{o} = \theta_p (p_j-p_0) + \xi_j$. Rearranging leads to the following implicit definition of quality:
+$$ \tag{3.6} \xi_j = ( \ln \sigma_{j} - \ln \sigma_{o} ) - \theta_p (p_j-p_0) $$
+The right-hand side corresponds to the residual of the demand equation.
+The first-order condition for price setting then is given by: 
+
+$$ p_j - p_0 = \exp(\theta_{c1}+\theta_{c2} \xi_{k_j} + \zeta_{j}) - \exp(\theta_{c1} + \zeta_{0}) - \frac{1}{\theta_p} \left( \frac{1}{(1 - \sigma_{j})}- \frac{1}{(1 - \sigma_{0})} \right) $$
+
+The aggregate price $p_j$ of firm $j$ is calculated as the average of the prices of its $j$'s models weighted by their sales. Equation (3.6) then provides the quality levels of the firms.  
+With the parameter values $\theta_p$ and $\theta_c$ we then can calculate the equilibrium profits for all firms:
+
+$$ \pi_j^{\star} (\xi_j, \xi_{-j}, m | \theta_p, \theta_c) = \{ p_{j}^{\star}-\mu_{j}(\xi_{j}|\theta_c) \} m \sigma_{j}( \xi_j, \xi_{-j}, p_j^{\star}, p_{-j}^{\star} |\theta_p) $$
+
+
+### C. The Dynamic Problem
+
+The dynamic problem can be formulated recursively by the following so-called Bellman equation:
+
+$$\tag{BE} V_j(  \xi_j, \xi_{-j}, \nu_j | \boldsymbol{\theta}) = \max_{x_j \in \mathbb{R}^+ } \left\{ \pi_j(\xi_j, \xi_{-j}, m | \theta_p, \theta_c)-c(x_j,\nu_j | \theta_x) + \beta E \left[ V_j(\xi_j', \xi_{-j}', \nu_j' | \xi_j, \xi_{-j}, x_j, \boldsymbol{\theta}) \right] \right\} $$
+$x_j$ are the number of patent applications, which are chosen strategically by firm $j$ to maximize its current and expected future profits $V_j(  \xi_j, \xi_{-j} \nu_j$. $\beta$ is the discount factor and $c(.)$ the cost function of R&D. The apostrophes indicate the next period, e.g. $\xi_j'$ represents the product quality of firm $j$ in the next period. $\boldsymbol{\theta}$ combines all parameters of the structural model.
+The cost of R&D $c(.)$ consists of a common part, that varies with the number of patent applications $x_j$, and a private shock $v_j$. It is a function of the dynamic parameters $\theta_{x}$. We consider the following parametrization:
+
+$$ c(x_j, \nu_j | \theta_x) = \underbrace{ 
+(\theta_{x1}+\theta_{x2} x_j + \theta_{x3} x_j^2 + \theta_{x4} \widetilde{\nu}_j) 
+}_{\text{cost per patent}} \, x_j $$
+
+Hashmi and Van Biesebroeck discretize the state variable $\xi_j$, i.e. the relative quality level of firm $j$ in the following way:
+
+$$ \Xi = \{ \xi_{\min}, \xi_{\min} + \Delta_{\xi}, \xi_{\min} + 2\Delta_{\xi},...,\xi_{\max} - \Delta_{\xi}, \xi_{\max} \} $$
+
+
+
+The expected value $E \left[ V_j(\xi_j', \xi_{-j}', \nu_j' | \xi_j, \xi_{-j}, x_j, \boldsymbol{\theta}) \right]$ in the Bellman equation (BE) above can be written explicitly as
+
+$$ E \left[ V_j(\xi_j', \xi_{-j}', \nu_j' | \xi_j, \xi_{-j}, x_j, \boldsymbol{\theta}) \right] = 
+\int \sum_{\xi_{-j}'} \sum_{\xi_{j}'} V_j(\xi_j', \xi_{-j}', \nu_j' | \boldsymbol{\theta}) \underbrace{P_{\xi} (\xi_j'|\xi_j,x_j,\theta_t)}_{\text{state evo of j}} \times \underbrace{P_{\xi} (\xi_{-j}'|\xi_{-j},x_{-j}(\nu_{-j}),\theta_t)}_{\text{state evo of j's rivals}} d \nu .$$
+
+$\theta_t$ are the state transition parameters. We integrate over the private cost shocks $\nu$. 
+
+
+The evolution of $\xi_j$ of firm $j$, denoted by $P_{\xi} (\xi'|\xi,x,\theta_t)$, depends on the own current quality level $\xi_j$. 
+
+The state evolutions are modeled in accordance to Ericson and Pakes (1995). The quality level in next period can take only three possible values. On the discretized domain $\Xi$, quality can improve by one step ($\xi_j'=\xi_j+\Delta_{\xi}$), can decrease by one step ($\xi_j'=\xi_j-\Delta_{\xi}$) or can remain unchanged ($\xi_j'=\xi_j$). We then get the following distribution over the possible future states:
+$$\begin{eqnarray*}
+p^U &= P(\xi_j' = \xi_{j} + \Delta_{\xi} | \xi_j, x_j) \\\\
+p^D &= P(\xi_j' = \xi_{j} - \Delta_{\xi} | \xi_j, x_j) \\\\
+p^S &= 1-p^U - p^D = P(\xi_j' = \xi_{j} | \xi_j, x_j)
+\end{eqnarray*}$$
+
+
+
+
+
+
+The solution to the Bellman equation (BE) is a strategy profile $x_j=\chi_j(\xi_j, \xi_{-j},\nu_j | \chi_{-j})$. I.e. firm $j$ decides on its innovation efforts $x_j$ based on its own quality level $\xi_j$, the quality level of its rivals $\xi_{-j}$ and its private cost shock $\nu_j$. The Markov Perfect Equilibrium (MPE) for the game then is "a strategy profile $\chi_j^{\star}$ that solves equation (BE) given that all rivals follow the same equilibrium strategy as firm $j$". (paper, page 198)
+The MPE strategies have the Markov property of memorylessness: Firm $j$'s strategy can be conditioned only on its state vector $s_j=\{ \xi_j, \xi_{-j}, \nu_j \}$.  
+  
+#### Estimation Outlook
+
+We now have to estimate the parameters of the defined structural model. In part A. we defined the static demand system derived from discrete choice decisions. The corresponding parameters, $\theta_p$ (demand) and $\theta_c$ (marginal cost) are estimated in Exercise 3.1. The state transition parameters $\theta_t$ are estimated in Exercise 3.2.  
+To estimate the dynamic parameters $\theta_x$ of the cost of R&D function $c(x_j,\nu_j | \theta_x )$ we need a special estimation approach, "as with fourteen firms in the industry, the brute force method of computing the MPE and matching predicted to observed innovation decisions is computationally infeasible". (paper, page 198) 
+To circumvent the problem of calculating the MPE multiple times, economists have developed two-step estimators. With these approaches it is possible to estimate the dynamic model without solving for the equilibrium even once. Hashmi and Van Biesebroeck adopt an estimator of Bajari, Benkard and Levin (2007). The estimator exploits that the observed innovation decisions, i.e. the number of patent applications, are outcomes of the MPE. 
+As Ryan (2012) explains, "in these two-step estimators, the econometrician first simply describes *what* the firms do at every state, and then imposes equilibrium restrictions from an underlying model to explain *why* the firms behave as they do."  
+The *what* is defined by the so-called empirical policy function which will be estimated in Exercise 3.2 together with the state transitions. This function describes a firm's innovation decisions as a function of the present state vector.  
+With the specified profit function, the estimated state transitions and the estimated policy function, we then can forward-simulate profit realizations. This is the first step of the estimation.
+In the second step the dynamic parameters $\theta_x$ are chosen to minimize the deviations from the equilibrium. These deviations occur "when a firm's value function is lower under the optimal policy than under a deviation". (paper, page 199)
+
+
+## Exercise 3.1. -- Estimation of the Demand and Cost Parameters
+
+We now estimate the demand ($\theta_p$) and marginal cost ($\theta_c$) parameters of the static part of the previously defined structural model using (car) model-level observations. Let us first take a look at the model-level data set `modellevel`.  
+Just click `check` to read in the data set `model-level.dta` and get some information about it.
+
+```{r "3_1_"}
+modellevel=read.dta("model-level.dta") %>%
+                filter(year>=1982, year<=2007) %>% # we use 1982 to 2007 as sample period
+                select(country, year, firm, make, model, price, Tsales, size, hpwt, mpg, mpd)
+
+colnames(modellevel)
+sample_n(modellevel, 6) 
+# this function is similar to head(). 
+# Instead of the first six observations it returns six random observations of the data frame 
+```
+
+The data frame `modellevel` has 12488 observations with eleven variables. Each observation represents a car model (`model`) in a year and a market. The info box below describes the variables of the data frame. 
+
+info("Variables of modellevel") # Run this line (Strg-Enter) to show info
+
+### Data preparation
+
+We face a few challenges with our data frame `modellevel` that we have to address.  
+  1. We have to create a dummy variable to account for the merger between Daimler and Chrysler.  
+  2. We have different sources of data (Petrin for the US and Verboven for five EU countries) and thus have normalize the two sources.  
+  3. Out of Verboven's five country data set on five European markets we create one EU market (we just call it EU market but of course mean the aggregate market of the five EU countries).  
+    
+These preparation steps are a little cumbersome and economically not interesting. They are thus added at the end of this exercise. We instead now move on to the prepared data frame `demand_estimation_data`.
+
+
+### Calculating Variables 
+
+
+Click `check` to load the prepared model-level data set and to receive informations about it. We will save it as `t4`.
+
+```{r "3_1___2"}
+t4=readRDS("demand_estimation_data.Rda")
+dim(t4)
+colnames(t4)
+```
+
+We have only 6220 observations left as I created one EU market out of the observations from Belgium, France, Germany, Italy and the UK. We also have a new variable `aftermerge1`, which is a dummy variable that accounts for the DaimlerChrysler merger. It is $1$ when Daimler equals DaimlerChrysler in the data set. The dummy variable `market` is $0$ when the observation is from the US and $1$ when from the EU.  
+
+As mentioned in the previous exercise we now use a Logit Discrete Choice model in which *aggregate market shares* $\hat{\sigma}$ are the outcome of discrete choices of the consumers in the market. Let us now calculate these market shares.  
+**Task:** Use `group_by()` and `mutate()` to calculate the total sales `Tsales` in each year for both markets. Then display the created data frame `t4_1`.
+
+```{r "3_1___3"}
+# t4_1 = t4 %>% group_by(...) %>% mutate(Tsales=...(sales))
+# t4_1
+
+t4_1 = t4 %>% group_by(year, market) %>% mutate(Tsales=sum(sales))
+t4_1
+```
+
+
+The market share of each observed model then is the number of sold cars of this model divided by all cars sold in the respective year in the market: `share=sales/Tsales`  
+**Task:** Use `mutate()` to calculate the market shares `share` and also the logarithm of the market shares `lns`. You will soon see why we need the log market shares.
+
+
+```{r "3_1___4"}
+# market share
+# t4_2= ...(t4_1, share=sales/..., lns=log(...))
+t4_2= mutate(t4_1, share=sales/Tsales, lns=log(share))
+```
+
+
+On the one hand we now have the observed market shares $\hat{\sigma}_{k_j}$ and on the other hand the discrete choice model with the predicted market shares
+$$ \sigma_{k_j}=\frac{\exp(X_{k_j} \beta + \theta_p p_{k_j} + \widetilde{\xi}_{k_j})}{1+\sum_{l=1}^n \sum_{k_l} \exp(X_{k_l} \beta + \theta_p p_{k_l} + \widetilde{\xi}_{k_l})} .$$
+
+We now estimate the parameters $\beta$ and $\theta_p$ by finding those values which match $\hat{\sigma}_{k_j}$ to $\sigma_{k_j}$. 
+By taking logs and normalizing we get the following estimating equation (3.2) for demand (was derived in the previous exercise):
+$$\tag{3.2} \ln \sigma_{k_j} - \ln \sigma_{k_o}=X_{k_j} \beta + \theta_p (p_{k_j}-p_{k_0}) + \widetilde{\xi}_{k_j} $$
+On the left hand side of the equation we have yet to calculate the observed market share of the outside good $\hat{\sigma}_{k_o}$. We consider the average model of the `"OTHER"` firms as outside good. Just click `check` to calculate it.
+
+```{r "3_1___5"}
+outside_share = t4_2 %>% filter(firm=="OTHER") %>% 
+                        group_by(market, year) %>% 
+                        summarise(Mlns=mean(lns))
+```
+
+
+We now create a variable `Dlns` which represents the LHS of the demand equation, i.e. $\ln \sigma_{k_j} - \ln \sigma_{k_o}$. Just click `check`. 
+
+```{r "3_1___6"}
+t4_3 = left_join(t4_2, outside_share, by=c("market"= "market", "year" = "year"))
+t4_4 = mutate(t4_3, Dlns=lns-Mlns)
+```
+
+For the RHS we have to create a variable `Dprice` which equates $p_{k_j}-p_{k_0}$. We also have to normalize the vehicle characteristics $X$ by the benchmark firm.
+Remember that we consider the combination of fringe firms (`make=="OTHER"`) in the sample as benchmark firm. The vehicle characteristics $X$ in our model are: Price (`price`), Size (`size`), Power/weight (`hpwt`), Fuel efficiency (miles per dollar) (`mpd`).  
+
+**Task:**: Create a data frame `benchmark_characteristics` out of `t4_2` which contains the characteristics of the model of the benchmark firm for each year in each market. 
+
+```{r "3_1___7"}
+benchmark_characteristics = t4_2 %>% filter(firm=="OTHER") %>% 
+                            group_by(market, year) %>% 
+                            summarise(Mprice=mean(price),
+                                      Msize=mean(size),
+                                      Mhpwt=mean(hpwt),
+                                      Mmpd=mean(mpd))
+
+```
+
+
+Next we add the benchmark characteristics to the main data frame and create `Dprice`, `Dsize`, `Dhpwt` and `Dmpd`.
+
+```{r "3_1___8"}
+t4_5 = left_join(t4_4, benchmark_characteristics, by=c("market"= "market", "year" = "year"))
+t4_6 = mutate(t4_5, Dprice=price-Mprice,
+                    Dsize=size-Msize,
+                    Dhpwt=hpwt-Mhpwt,
+                    Dmpd=mpd-Mmpd)
+```
+
+
+We now can estimate the demand equation via OLS. We control for the Daimler-Chrysler merger (dummy variable `aftermerge1`) and for the the fact that we have observations from two markets (dummy variable  `market`).  
+**Task:** Uncomment the command and add the two above mentioned dummy variables to the regression. Then display the regression with `showreg()`.
+
+```{r "3_1___9"}
+# ols_demand = lm(Dlns~Dprice+Dsize+Dhpwt+Dmpd+...+..., data=t4_6)
+# showreg(ols_demand, digits=3, stars=c(0.01,0.05,0.1))
+
+ols_demand = lm(Dlns~Dprice+Dsize+Dhpwt+Dmpd+aftermerge1+market, data=t4_6)
+showreg(list(ols_demand), digits=3, stars=c(0.01,0.05,0.1))
+```
+
+  
+This OLS regression will most likely be biased and inconsistent. Manufacturers use informations about the (for the econometrician) unobservable quality differentiation ($\widetilde{\xi}_{j}$) in their pricing decisions $p_j$. Prices therefore then will be correlated with the error term: $Cor(p_j, \widetilde{\xi}_{j})>0$. An *instrumental variable* to control for this endogeneity in price should be correlated with the price but not with the error term.  
+Berry (1994) and Berry et. al. (1995) propose to instrument the price $p_j$ with a function of the vehicle characteristics of the rival firms. The intuition is that the rival's characteristics have no direct impact on the error term but through competition they have an impact on prices. The characteristics that are available  to us are `size`, horse power per weight (`hpwt`) and fuel efficiency (`mpd`).  
+There are many possible ways to create instruments out of the vehicle characteristics of the rival firms. Hashmi and Van Biesebroeck use the following specification of rivals' vehicle characteristics:
+
+```{r "3_1___10"}
+t4_7=t4_6 %>% group_by(year) %>% 
+  mutate(Thpwt=sum(hpwt), Tsize=sum(size), Tmpd=sum(mpd), C=n())
+
+t4_8=t4_7 %>% group_by(year, firm) %>% 
+  mutate(TFhpwt=sum(hpwt), TFsize=sum(size), TFmpd=sum(mpd), CF=n())
+
+t4_9=t4_8 %>% ungroup() %>% 
+  mutate(Ihpwt=(Thpwt-TFhpwt)/(C-CF), Isize=(Tsize-TFsize)/(C-CF),
+         Impd=(Tmpd-TFmpd)/(C-CF))
+
+outside_shifters= t4_9 %>% 
+  filter(firm=="OTHER") %>% 
+  group_by(market, year) %>% 
+  summarise(MIsize=mean(Isize),
+            MIhpwt=mean(Ihpwt),
+            MImpd=mean(Impd))
+
+t4_10 = left_join(t4_9, outside_shifters, by=c("market" = "market", "year" = "year"))
+t4_11 = mutate(t4_10,
+                    DIsize=Isize-MIsize,
+                    DIhpwt=Ihpwt-MIhpwt,
+                    DImpd=Impd-MImpd)
+```
+
+I don't have an intuition for the exact specification of the instruments `DIsize`, `DIhpwt` and `DImpd`. We will later create simpler and more intuitive instruments. 
+Let us now estimate the demand equation via Instrumental Variable regression with the instruments `DIsize`, `DIhpwt` and `DImpd`. with `felm()` this can be done the following way:
+
+
+```{r "3_1___11"}
+log_lin <- felm(Dlns ~ Dsize + Dhpwt + Dmpd + aftermerge1 + market |
+                  0 | 
+                  (Dprice ~ DIsize+DIhpwt+DImpd), data=t4_11)
+
+showreg(list(ols_demand, log_lin),
+        custom.model.names = c("OLS", "IV") , digits=3, stars=c(0.01,0.05,0.1))
+
+```
+
+
+The important bits here are the two price estimates `Dprice` (from the OLS regression) and `Dprice(fit)` (from the IV regression). They are very similar to Berry et. al.'s (1995) estimates:
+![BLP_table](tables/Berry_table.png)
+For the OLS regression (column 1) they argue that the estimates "have a distinctly implausible set of implications on own price elasticities. The estimated coefficient on price [...] implies that 1494 of the 2217 models have inelastic demands. This is inconsistent with profit maximizing price choices". About the IV regression they state that "only 22 products have inelastic demands - a significant improvement from the OLS results".  
+
+
+
+The function `ivreg()` from the package `AER` provides diagnostic tests for IV estimation. The formula notation in `ivreg()` is different to the notation in `felm()`.
+
+```{r "3_1___12"}
+summary(ivreg(Dlns ~ Dprice + Dsize + Dhpwt + Dmpd + aftermerge1 + market | 
+                Dsize + Dhpwt + Dmpd + aftermerge1 + market + DIsize + DIhpwt + DImpd, data=t4_11),
+        diagnostics=TRUE)
+```
+
+
+The function `summary.ivreg()` has the logical argument `diagnostics`. When `TRUE`, the following diagnostic tests for the instrumental-variable regression are carried out:  
+
+- **F test of the first stage regression for weak instruments**    
+- **Wu-Hausman test for endogeneity**   
+- **Sargan test of overidentifying restrictions**  
+
+The weak instruments test is rejected, thus the instruments are correlated with the regressors. The Wu Hausman test is also rejected indicating that it is necessary to use IV-regression here. For the Wu-Hausman test the Nullhypothesis here is that the price is exogenous, i.e. the low p-value suggests that price is indeed endogenous. The Sargan test is rejected, meaning that at least one of our instruments is endogenous. This would mean that our instruments are not valid anymore.  
+
+
+#### Simpler and more intuitive instruments
+
+
+We simply use the sum of the vehicle characteristics of the other firms as instruments. The idea behind it is that oligopolistic competition makes firm $j$ set the price $p_{k_j}$ for its vehicle $k_j$ as a function of the characteristics of cars produced by the competing firms $t \neq j$. E.g. VW's Polo price will depend on how closely substitutable a BMW 3 Series is with a Polo. On the other hand, characteristics of rival cars should not affect consumer's valuation of firm $j$'s car.  
+More formally: The characteristic $x_{k_t}$ of model $k_t$ by firm $t$ is correlated with price $p_{k_j}$ of model $k_j$ by firm $j$ via the markup in the first-order condition but is excluded from the utility $u_{ik_j}$ of consumer $i$. 
+
+
+```{r "3_1___13"}
+attributes=c("Dsize", "Dhpwt", "Dmpd")
+
+blp_instruments = t4_9 %>% 
+    group_by(market, year, firm) %>%
+    mutate(blp_size=sum(Dsize)-Dsize,
+           blp_hpwt=sum(Dhpwt)-Dhpwt,
+           blp_mpd=sum(Dmpd)-Dmpd)
+  
+
+
+blp_reg=felm(Dlns ~ Dsize + Dhpwt + Dmpd + aftermerge1 + market | 0 | 
+       (Dprice ~ blp_size+blp_hpwt+blp_mpd), data=blp_instruments)
+
+
+showreg(list(log_lin, blp_reg), custom.model.names = c("IV Hashmi Instruments", "IV Simple Instruments"),
+        digits=3, stars=c(0.01,0.05,0.1))
+```
+
+Our simple instruments bring roughly the same result. 
+
+Another approach to estimate the demand parameter is by combining two-stage least squares (i.e. Instrumental Variables) with year within transformations (i.e. Fixed Effects). Through this we can avoid the Berry transformation from `lns` to `Dlns`, `size` to `Dsize`, and so on. 
+
+```{r "3_1___14"}
+iv_fe <- felm(lns ~ size + hpwt + mpd + aftermerge1 + market | 
+              factor(year) | (price ~ Isize + Ihpwt + Impd), data=t4_11)
+
+showreg(list(log_lin, iv_fe), custom.model.names = c("IV", "IV FE"),
+        digits=3, stars=c(0.01,0.05,0.1))
+```
+
+A technical remark on why our regression results differ from Hashmi and Van Biesebroeck's:  
+When calculating the total sales `Tsales` they only group by `year` and not by the `market` (EU or US). I.e. for `iv_reg` you will get the same result as in Table 4 (paper, page 199) when you use `t4_1 = t4 %>% group_by(year) %>% mutate(Tsales=sum(sales))` instead of `t4_1 = t4 %>% group_by(year, market) %>% mutate(Tsales=sum(sales))`at the beginning of this exercise.  
+
+For the constant marginal cost specification we can now directly obtain the parameter $\theta_c$:
+
+```{r "3_1___15"}
+# first we calculate the markups
+t4_12=t4_11 %>% group_by(year, market, firm) %>% mutate(markup=1/(1-sum(share)))
+
+# then the quality level xi and the marginal cost for each observation.
+const_mc=mutate(t4_12, xi=lns-iv_fe$coeff[6]*price-iv_fe$coeff[5]*market-iv_fe$coeff[4]*aftermerge1,
+                    MC=price-markup/-iv_fe$coeff[6])
+
+# the parameter estimate for theta_c then is 
+mean(const_mc$MC) 
+# with standard error
+sd(const_mc$MC)/sqrt(length(const_mc$MC)) 
+```
+
+
+
+info("Data Preparation: Demand Estimation") # Run this line (Strg-Enter) to show info
+
+## Exercise 3.2 -- Estimation of the State Transitions and the Policy Function
+
+We now move on to the dynamic part of the model. 
+
+### Estimation of the Empirical Policy Function
+
+
+To calculate future profits we need the values of the future state variables $\xi$. For this, Hashmi and Van Biesebroeck use the following specification for the empirical policy function:
+
+$$\begin{eqnarray*}
+x_{jt} &=& \alpha_0+\alpha_1 \xi_{jt}+\alpha_2 \xi_{jt}^2+\alpha_3 \xi_{jt}^3+\alpha_4 \text{Rank}(\xi_{jt}) \\\\
+& & + \alpha_5 Mean(\xi_{ \cdot t}) + \alpha_6 SD(\xi_{\cdot t}) + \alpha_7 Skew(\xi_{\cdot t}) + \alpha_8 Kurt(\xi_{\cdot t}) + \alpha_9 IQR(\xi_{\cdot t}) + \alpha_{10} Max(\xi_{\cdot t}) + e_{jt}
+\end{eqnarray*}$$
+
+Remember that $x_{jt}$ are the observed patent applications. The specification includes a cubic function of firm $j$'s own quality $\xi_j$ (in the first row of the equation). It further includes several terms that summarize the observed quality levels of all active firms $\xi_.$. These terms are the first four moments of the distribution of $\xi$, i.e. mean, standard deviation, skewness, kurtosis, and aspects of the range of the observed quality (maximum, interquartile range, and firm $j$'s own rank in the industry). The approximation error $e_{jt}$ is the difference between the innovation level that the true innovation policy calls for and the predicted policy function.
+
+First we load the prepared data set `state_trans`. Just click `check`.
+
+```{r "3_2"}
+state_trans = read.csv("state_trans.csv") 
+colnames(state_trans)
+head(state_trans)
+```
+
+`state_trans` contains  the quality levels `xi1` (for the constant marginal cost specification) and `xi3` (log linear mc) at the firm level. I omit the calculation of these but provide the code at the end of this exercise. `state_trans` also contains the lagged quality levels `xi1_lag` and `xi3_lag`.  
+
+We use the package `moments` to calculate the above mentioned statistics of `xi1_lag` and `xi3_lag` like skewness and kurtosis. 
+
+
+```{r "3_2__2"}
+library(moments)
+
+t5_1 =state_trans %>% group_by(year) %>% mutate(xi1_lag_mean=mean(xi1_lag),
+                                           xi1_lag_sd=sd(xi1_lag),
+                                           xi1_lag_skew=skewness(xi1_lag),
+                                           xi1_lag_kurt=kurtosis(xi1_lag),
+                                           xi1_lag_rank=rank(xi1_lag, ties.method= "first"),
+                                           xi1_lag_iqr=IQR(xi1_lag, type=2),
+                                           xi1_lag_max=max(xi1_lag),
+                                           xi3_lag_mean=mean(xi3_lag),
+                                           xi3_lag_sd=sd(xi3_lag),
+                                           xi3_lag_skew=skewness(xi3_lag),
+                                           xi3_lag_kurt=kurtosis(xi3_lag),
+                                           xi3_lag_rank=rank(xi3_lag, ties.method= "first"),
+                                           xi3_lag_iqr=IQR(xi3_lag, type=2),
+                                           xi3_lag_max=max(xi3_lag))
+```
+
+
+We now conduct an OLS regression of the policy function: 
+
+```{r "3_2__3"}
+policy_reg1=lm(lpat_app~xi1_lag+I(xi1_lag^2)+I(xi1_lag^3)+xi1_lag_mean+xi1_lag_sd+xi1_lag_skew+xi1_lag_kurt+
+                xi1_lag_rank+xi1_lag_iqr+xi1_lag_max, data=filter(t5_1, !is.na(pat_app)))          
+
+policy_reg3=lm(lpat_app~xi3_lag+I(xi3_lag^2)+I(xi3_lag^3)+xi3_lag_mean+xi3_lag_sd+xi3_lag_skew+xi3_lag_kurt+
+                xi3_lag_rank+xi3_lag_iqr+xi3_lag_max, data=filter(t5_1, !is.na(pat_app)))   
+
+showreg(list(policy_reg1, policy_reg3), custom.model.names = c("Constant MC", "Log-Linear MC"),
+        digits=2, stars=c(0.01,0.05,0.1))
+```
+**Table 5:** Empirical Policy Functions. Source: Page 200
+
+There are a few interesting patterns in this table. In both specifications higher own quality leads to more innovation ($\alpha_1=0.48$, respectively $\alpha_1=1.93$). But this relationship is inverted U-shaped ($\alpha_2$ and $\alpha_3$ are negative for both specification. Hashmi and Van Biesebroeck argue that "the negative terms are large enough to reduce innovation once own quality is sufficiently high." (paper, page 200).  
+In the log-linear model innovation is higher when the average quality is higher ($\alpha_5=9.48$). The authors state that this is suggestive of a strategic response.
+A higher quality dispersion in the industry boosts innovation as the terms on the interquartile range are positive and statistically significant.
+
+
+
+
+#### Estimation of the State Transitions
+
+In our model each firm has two state variables: the i.i.d. shock to the cost of innovation $\nu$ and the quality of a firm's vehicle relative to the (car) model of the peripheral firm $\xi$. The quality level can go one step up, one step down, or remain unchanged from one year to the next as in Ericson and Pakes (1995). A firm can be hit by a positive or negative shock that determines the movement of the quality level. The probability of a positive shock is $p \in [0,1]$ and the probability of a negative shock is $d \in [0,1]$. Hashmi and Van Biesebroeck parametrize $p$ and $d$ in the following way:
+
+$$\begin{eqnarray*} 
+d &=& \theta_{t1} \\\\
+p &=& \exp(-\exp(-(\theta_{t2} ln(x_{jt}+1)+\theta_{t3} \xi_{jt} + \theta_{t4} \xi_{jt}^2)))
+\end{eqnarray*}$$
+
+Hashmi and Van Biesebroeck state that the probability of a negative shock ($d$) is "due to a quality improvement by the peripheral firm. Such a negative shock affects the normalized quality level of all firms at the same time". (paper, page 200)
+
+With the assumption that the two shocks are independent we can derive the transition probabilities, i.e. the probabilities of moving up, moving down, or staying:
+            
+$$\begin{eqnarray*}
+p^U &=& p(1-d) \\\\
+p^D &=& (1-p)d \\\\
+p^S &=& 1-p^U - p^D = pd + (1-p)(1-d)
+\end{eqnarray*}$$
+
+These transition probabilities then fully define the transition function  $P_{\xi} (\xi_j'|\xi_j,x_j)$ (cf. the expected value in Exercise 3.).
+
+To estimate the parameters $\theta_{t1}$, $\theta_{t2}$, $\theta_{t3}$ and $\theta_{t4}$ we use maximum likelihood.  
+
+
+First we have to specify the Likelihood function:
+
+```{r "3_2__4"}
+LL <- function(theta1, theta2, theta3, theta4) {
+  d=theta1
+  p=exp(-exp(-(theta2*log(1+state_trans$pat_app)+theta3*state_trans$xi1_lag+theta4*state_trans$xi1_lag^2)))
+  p_u=p*(1-d)
+  p_d=d*(1-p)
+  p_s=1-p_u-p_d
+  -sum(log(p_u*state_trans$up1+p_s*state_trans$stay1+p_d*state_trans$down1), na.rm=TRUE) # mle() calculates negative log-likelihood
+}
+```
+
+Then we use the package `bbmle` to fit the maximum likelihood model.
+
+```{r "3_2__5"}
+library(bbmle)
+mle=mle2(LL, start = list(theta1 = 0.5, theta2 = 0.5, theta3 = 0.5, theta4 = 0.5))
+summary(mle)
+```
+
+$\theta_{t1}$ implies that a firm of average quality ($\xi=0$) that does not innovate ($x_{jt}=0$) has a 36 percent chance that its relative quality declines by one. This is because $p^D=d(1-p)=0.547(1-0.44)=0.36$.  
+
+We now visualize the parameterization of $p$. Just click `check`.
+
+```{r "3_2__6"}
+p_func = function(pat, xi, spec="log lin mc") {
+  
+  if(spec=="const mc"){
+    # const mc
+    mc=c(0.062, -0.884, -0.285)
+  }
+  if(spec=="log lin mc"){
+    # log linear mc
+    mc=c(0.126, -1.44, 0.403)
+  }
+  
+  value=exp(-exp(-(mc[1]*log(pat+1)+mc[2]*xi+mc[3]*xi^2)))
+  data.frame(pat = pat, xi=xi, value =value)
+}
+
+
+xi_spec = expand.grid(xi = c(-1.4,-0.7, 0, 0.7, 1.4), spec = c("const mc", "log lin mc"))
+
+library(plyr)
+
+all=mdply(xi_spec, p_func, pat=seq(0,250, len=100))
+
+xi_plot=ggplot(all, aes(pat, value, colour=factor(xi)))+
+  facet_wrap(~spec ,scales="free", ncol=2) + geom_line()
+
+pat_spec = expand.grid(pat = c(0, 50, 100, 150, 200, 250), spec = c("const mc", "log lin mc"))
+all_p=mdply(pat_spec, p_func, xi=seq(-1.4,1.4, len=100))
+
+p_plot=ggplot(all_p, aes(xi, value, colour=factor(pat)))+
+  facet_wrap(~spec ,scales="free", ncol=2) + geom_line()
+
+grid.arrange(xi_plot, p_plot, ncol=1)
+```
+
+
+## Exercise 4 -- Industry Equilibrium
+
+We now use the estimated model to understand the intricate ways in which innovation incentives are shaped by different aspects of competition.  
+We omit the calculation of the equilibrium as this is computational very burdensome. Hashmi and Van Biesebroeck use an algorithm by Pakes and McGuire (1994) to calculate the Markov Perfect Equilibrium (MPE) for four respectively five firms, fifteen possible values for the quality level $\xi$ and three possible quality levels in the next period (up, down , stay). This means that there are $81=3^5$, respectively $243 =3^5$ possible industry states in one period. Hashmi and Van Biesebroeck state that it takes approximately two days to compute the equilibrium for five firms and around 90 minutes on their office computer for four firms.
+
+Hashmi and Van Biesebroeck provide the data sets with the calculated MPEs for four respective five firms and fifteen possible quality levels $\xi \in \{ -1.4, -1.2, ... ,1.2, 1.4\}$, which will be used from us in this exercise. 
+With four firms the data set has $3060 = \binom{18}{4} = \binom{15+4-1}{4}$ observations, i.e. industry states. With five firms the data set has
+$$ 11628 = \binom{19}{5} = \binom{15+5-1}{4} $$ 
+observations, i.e. industry states.   
+This is a combinatorics problem of unordered sampling with replacement. We have a set with $n=15$ elements $\xi \in \{ -1.4, -1.2, ... ,1.2, 1.4\}$, and we want to draw $k=4$, respectively $k=5$ samples from the set. The total number of ways of doing this is $\binom{n+k-1}{k}$.
+   
+Click `check` to load the data set with the equilibrium innovations for four firms.
+
+```{r "4"}
+four_firms <- read.delim("4firms_stochastic_update.txt") 
+head(four_firms)
+# first column: quality level of firm 1
+# ...
+# fourth column: quality level of firm 4
+
+# next four columns: xJ_k1  J=1,2,3,4
+# then k2, k3, k4, k5
+# R&D expenditures
+# Overall: 4*5=20 such columns
+```
+
+
+The first four columns `xi1`,...,`xi4` show the quality levels of the firms. For all observations it holds $\xi_1 \ge \xi_2 \ge \xi_3 \ge \xi_4$. The other 20 variables represent the optimal innovation strategies.
+Hashmi and Van Biesebroeck calculated the MPE with private R&D cost shocks $\nu \in \{-2, -1, 0, 1, 2 \}$ from the standard normal distribution, i.e. with probabilities $\{0.067, 0.242, 0.383, 0.242, 0.067\}$. We thus can calculate the expected level of innovation, i.e. the number of patent applications, given the distribution of the cost shock:
+
+```{r "4__2"}
+prob = c(0.067, 0.242, 0.383, 0.242, 0.067)
+
+four_1 = transmute(four_firms, p1=x1_k1*prob[1]+x1_k2*prob[2]+x1_k3*prob[3]+x1_k4*prob[4]+x1_k5*prob[5],
+                p2=x2_k1*prob[1]+x2_k2*prob[2]+x2_k3*prob[3]+x2_k4*prob[4]+x2_k5*prob[5],
+                p3=x3_k1*prob[1]+x3_k2*prob[2]+x3_k3*prob[3]+x3_k4*prob[4]+x3_k5*prob[5],
+                p4=x4_k1*prob[1]+x4_k2*prob[2]+x4_k3*prob[3]+x4_k4*prob[4]+x4_k5*prob[5],
+                Kxi1=round(10*xi1), # quality level: -14 to 14
+                Kxi2=round(10*xi2),
+                Kxi3=round(10*xi3),
+                Kxi4=round(10*xi4))
+
+sample_n(four_1, 6)
+```
+
+
+In the next exercises we will use the equilibrium data to investigate the relationship between market structure and innovation in the industry. It is worth mentioning that the the quality levels where transformed from $\xi \in \{ -1.4, -1.2, ... ,1.2, 1.4\}$ to $\xi_new \in \{ -14, -12, ... ,12, 14\}$ by multiplying them by 10. This simply ensures that we have a plotting range from -14 to 14.  
+
+info("Notation issues") # Run this line (Strg-Enter) to show info
+
+
+## Exercise 4.1. -- Equilibrium Relationship between Market Structure and Innovation
+
+We now have the optimal innovation strategies in all possible market structures with four, respectively five firms and fifteen possible quality levels. 
+Click `check` to load the prepared equilibrium data.
+
+```{r "4_1_"}
+equilibrium_data = readRDS(file="equilibrium_data.Rda")
+dim(equilibrium_data)
+colnames(equilibrium_data)
+head(equilibrium_data)
+```
+
+
+The data set `equilibrium_data` has 14688 observations. 11628 of these are observations which contain all the possible market structures with five firms and the fifteen quality levels. The remaining 3060 observations are of the possible market structures with four firms (cf. the previous exercise for the number of observations). The indicator variable `firms` has value `5` for observations with five firms and `4` for observations with four firms.  
+The variables `p1`,...,`p5` have the expected number of patents by the firms as values. For observations with four firms we have `p5=NA`.
+`xi1`($=\xi_1$),...,`xi5` have the quality levels -14 to 14 as values.
+
+### Relationship between innovation and a firm's own quality
+
+We now plot a firm's optimal number of patent applications against its **own** quality level $\xi_j$ in a market with five firms. This optimal innovation decision doesn't only depend on the own quality level, but also on the market structure, i.e. the quality levels of the four rivals firms. First we calculate the average quality levels and the average number of patent applications for each market structure. 
+
+**Task:** First filter out observation with five firms with `dplyr`'s `filter()`. We then want to calculate the average number patent applications `mean_p` for each market structure, as well as the average quality level of the firms `mean_xi`. To do row-wise calculations use `rowwise()` from `dplyr`. Save the new data frame as `fig2_1`.
+
+```{r "4_1___2"}
+# fig2_1 = equilibrium_data %>% 
+#            filter(firms==...) %>%
+#            rowwise() %>%
+#            mutate(mean_p=mean(c(p1,p2,p3,p4, p5)), 
+#                    mean_xi=mean(...))
+
+fig2_1 = equilibrium_data %>% 
+            filter(firms==5) %>%
+            rowwise() %>%
+            mutate(mean_p=mean(c(p1,p2,p3,p4,p5)), 
+                    mean_xi=mean(c(xi1,xi2,xi3,xi4,xi5)))
+
+```
+
+
+We now again utilize `ggplot2`'s biggest strength, the ability to plot multiple layers. We create a scatter plot with the quality levels on the horizontal axis and the number of patent applications on the vertical axis. Just click `check` to create it. We will describe and analyze the different layers of the plot below.  
+
+```{r "4_1___3",fig.width=12, fig.height=10}
+
+library(ggplot2)
+
+fig2 = ggplot(fig2_1) + 
+  # symmetric firms (violet rectangles):
+  geom_point(aes(x=xi1, y=p1, color="Symmetric firms"), data=filter(fig2_1, xi1==xi4), shape=15, size=5) + 
+  # leading firms (blue dots):
+  # Kxi1 >= Kxi2 >= Kxi3 >= Kxi4 for all observations! (orderd so that firm 1 has highest quality)
+  geom_point(aes(x=xi1, y=p1, color="Leader"), shape=20, size=2) +
+  # lagging firms (green dots)
+  geom_point(aes(x=xi4, y=p4, color="Laggard"), shape=20, size=2) +
+  # average innovation (small red dots):
+  geom_point(aes(x=mean_xi, y=mean_p, color="Average innovation"), size=0.01) +
+  labs(title="Relationship Between Innovation and a Firm's Own Quality",
+       x="Quality (relative to outside good)",
+       y="Innovation")  
+
+fig2
+```
+**Figure 4.1:** Relationship Between Innovation and a Firm's Own Quality. Source: Page 203  
+
+
+The fifteen rectangles represent the market structures in which all five strategic firms have the same quality level ($\xi_1=\xi_2=\xi_3=\xi_4=\xi_5$). E.g. the rectangle to the left represents the market structure in which all five firms have a quality level of -15. In this situation all five firms have a optimal innovation decision of 19.462 patents:
+
+```{r "4_1___4",optional=TRUE}
+filter(equilibrium_data, firms==5, xi1==-14, xi5==-14)
+```
+
+
+
+Quiz: What is the optimal innovation decision for five symmetric firms with quality level 0? You can either use the chunk above and change the filter command in the correct way or read the solution off the graph.
+
+- around 120 patents [ ]
+
+- around 215 patents [x]
+
+- around 300 patents [ ]
+
+
+The next layer of Figure 4 shows the innovation decisions for the situations in which the firm is market leader in quality (`Leader`). Given the own quality level, there are now dispersions in the innovation decision. The following table shows the minimal and maximal innovation decisions and the ratio $p_{max}/p_{min}$ for each quality level of the leader:
+
+```{r "4_1___5"}
+ungroup(fig2_1) %>% # fig2_1 was created grouping rowwise
+  group_by(xi1) %>% 
+  summarise(min_p=min(p1), max_p=max(p1), dispersion=max_p/min_p, n=n())
+```
+
+So the dispersion is highest at $\xi_1=8$. The market structures for the minimal and maximal innovation decisions with the leader having quality level 8 are:
+
+```{r "4_1___6"}
+filter(fig2_1, xi1==8) %>% slice(which.min(p1)) %>% select(p1, xi1, xi2, xi3, xi4, xi5)
+filter(fig2_1, xi1==8) %>% slice(which.max(p1)) %>% select(p1, xi1, xi2, xi3, xi4, xi5)
+```
+
+The leading firm with quality level 8 innovates the least when the rivals also have quality level 8. It innovates the most when its four rivals have the worst quality level (-14). 
+
+The layer `Laggard` shows the innovation decisions for the situations in which the firm has the worst quality level:
+
+```{r "4_1___7"}
+ungroup(fig2_1) %>% # fig2_1 was created grouping rowwise
+  group_by(xi4) %>% 
+  summarise(min_p=min(p4), max_p=max(p4), dispersion=max_p/min_p, n=n())
+```
+
+For firms with the worst quality level, the dispersion is decreasing in the own quality level.  
+
+Overall, we again find the inverted U-shape. There seems to be a positive relationship between innovation and quality at the left side from the peripheral firm's quality level (normalized to 0). Further there seems to be a negative relationship at the right side of it.  
+This behaviour can be explained from the primitives of the model:  
+
+**Positive Relationship:**  
+
+In our model a firm innovates in order to increase the probability of an improvement of its quality level. The parametrization of the state transitions ensures that "a firm needs to raise its level of innovation to attain the same benefit if its current quality level is higher". (paper, page 203)
+Remember that the probability of a positive shock was defined and estimated as (for the specification with log linear marginal costs):
+$$ p=\exp(-\exp(-(0.126 \ln(p_{j}+1) - 1.44 \xi_{j} + 0.403 \xi_{j}^2))) $$
+For a given number of patent applications $p_j$ the probability of a positive shock decreases in the quality level $\xi_j$.
+
+This is not the only force leading to the positive relationship. In the model firms also fight depreciation of their quality level. This occurs because the outside firm also improves its quality level. E.g. if the outside firm improves its quality level by one step we normalized it back to level 0. All firms then c.p. face a depreciation of their quality level by one (the quality levels are always relative to the outside good). So it is necessary to innovate to maintain the relative quality level. This is of course also true outside the model. Imagine the VW Polo as outside good. Many product features that are standard today were not available a decade ago, or only available in premium cars. Power windows are a product feature that were only available in premium cars for a long period. Today have become common and most manufacturers do no longer sell cars with hand crank windows. The premium manufacturers thus need new features that differentiates themselves from cheaper rivals. As we have seen in exercise 3 the average cost of R&D is declining in the number of patents. As Hashmi and Van Biesebroeck note, "this makes it easier to innovate sufficiently to counter depreciation and is a second factor leading to a positive relationship." (paper, page 203)
+
+  
+**Negative Relationship:**   
+For the log linear marginal cost specification the value of a higher quality level is not constant. It raises demand, but also the marginal production cost. We can think of this as some type of over-engineering. A family sedan that has an engine with 200 horsepower and a top speed of 250km/h might be considered overbuilt by most consumers. Looking at specification we see that the marginal cost increase convexly in $\xi$: 
+$$ \mu_{k_j} = \exp( \theta_{c1} + \theta_{c2} \xi_{k_j} + \zeta_{k_j} ) $$
+With the argument that the profits thus will eventually become concave in quality, Hashmi and Van Biesebroeck conclude that further improvements will be less valuable. 
+This is the main reasoning that Hashmi and Van Biesebroeck provide to explain the negative relationship on the right. 
+
+The small red points in Figure 4.1 show average innovation across all five firms as a function of their average quality. The average innovation is highest in the symmetric case as the number of patent applications is concave and eventually even decreasing in the own quality level $\xi_j$. The small red points cover a much wider range of innovation decision. In the extreme case, the number of patent applications can be more than eight times higher for the same average quality level: 
+
+```{r "4_1___8"}
+ungroup(fig2_1) %>% group_by(mean_xi) %>% 
+  summarise(min_p=min(mean_p), max_p=max(mean_p), 
+            dispersion=max_p/min_p) %>%
+  slice(which.max(dispersion))
+```
+
+Holding the average quality level constant, the average number of patent applications is highest for the market structure with symmetric firms and lowest for the situation with a maximum inequality between the five firms. Check in the code chunk below that this is indeed the case for the situation with a mean quality level of -12.
+
+```{r "4_1___9"}
+fig2_1 %>% filter(mean_xi==-12) %>% mutate(xi_sd=sd(c(xi1,xi2,xi3,xi4,xi5)), max_diff=abs(xi1-xi4)) %>%
+    arrange(mean_p) %>% select(mean_p, xi_sd, max_diff, xi1, xi2, xi3, xi4, xi5)
+```
+
+For the market structures with an average quality level of -12 the average number patent applications is lowest when the leading firm has quality level -4 and the four laggards subsequently the minimum level of -14. It is highest for the symmetric case in which each firm has quality level -12 and applies for 73.36 patents. 
+
+### Relationship Between Innovation and Rival Quality
+
+In a next step we now display the optimal innovation for a firm with quality 0 for different market structures. Remember that 0 is also the quality level of the outside good.  
+**Task:** Use `filter()` again to only keep observations with five firms. This time, we are interested in the sum of the quality levels of the five firms, which we will create as a variable `sum_xi` with `mutate()`. Remember that you can do row-wise calculations with `rowwise()` from `dplyr`. Save the new data frame as `fig3_1`.
+
+
+```{r "4_1___10"}
+# fig3_1 = equilibrium_data %>% 
+#          filter(firms==...) %>%
+#          rowwise() %>% 
+#          ...(sum_xi=sum(c(...)))
+
+fig3_1 = equilibrium_data %>% 
+          filter(firms==5) %>%
+          rowwise() %>% 
+          mutate(sum_xi=sum(c(xi1,xi2,xi3,xi4,xi5)))
+```
+
+
+We use `sum_xi` to more easily calculate the average quality of the rivals `Txi_j`. Consider that `sum_xi-xi1=xi2+xi3+xi4+xi5`, `sum_xi-xi2=xi1+xi3+xi4+xi5`, and so on. Just click `check`. 
+
+```{r "4_1___11"}
+fig3_2 = mutate(fig3_1, Txi_1=(sum_xi-xi1)/4, Txi_2=(sum_xi-xi2)/4,
+                Txi_3=(sum_xi-xi3)/4, Txi_4=(sum_xi-xi4)/4, Txi_5=(sum_xi-xi5)/4)
+
+sample_n(select(fig3_2,xi1, xi2, xi3, xi4, xi5, Txi_1, Txi_2, Txi_3, Txi_4, Txi_5), size=6)
+```
+
+
+**Task:** We now create a scatter plot with five layers. On the horizontal axis, we plot the average quality of the rivals and on the vertical axis the number of patent applications by the zero quality firm. The first layer consists of the observations in which the zero quality firm is leading (`xi1==0`). The second layer consists of the observations in which the zero quality firm is at the second position (`xi2==0`), and so on. 
+For each of the five `geom_point` layers you have to put the correct commands for the three dots (`...`). 
+
+
+```{r "4_1___12",fig.width=12, fig.height=10}
+# fig3 = ggplot() + 
+#  geom_point(data=filter(fig3_2, ...), aes(x=Txi_1, y=p1, color="Leader")) +
+#  geom_point(data=filter(fig3_2, xi2==0), aes(x=Txi_2, ..., color="Second")) +
+#  geom_point(data=...(fig3_2, xi3==0), aes(x=Txi_3, y=p3, color="Third")) +
+#  geom_point(data=filter(...), aes(x=Txi_4, y=p4, color="Fourth")) +
+#  geom_point(data=filter(fig3_2, xi5==0), aes(..., color="Laggard")) +
+#  labs(title="Relationship between Innovation and Rival Quality",
+#       x="Average quality of rivals (own quality = 0)",
+#       y="Innovation") 
+
+# fig3
+
+fig3 = ggplot() + 
+  geom_point(data=filter(fig3_2, xi1==0), aes(x=Txi_1, y=p1, color="1. Leader")) +
+  geom_point(data=filter(fig3_2, xi2==0), aes(x=Txi_2, y=p2, color="2. Second")) +
+  geom_point(data=filter(fig3_2, xi3==0), aes(x=Txi_3, y=p3, color="3. Third")) +
+  geom_point(data=filter(fig3_2, xi4==0), aes(x=Txi_4, y=p4, color="4. Fourth")) +
+  geom_point(data=filter(fig3_2, xi5==0), aes(x=Txi_5, y=p5, color="5. Laggard")) +
+  labs(title="Relationship between Innovation and Rival Quality",
+       x="Average quality of rivals (own quality = 0)",
+       y="Innovation") 
+
+ fig3
+```
+
+
+This plot shows the optimal innovation decision for a firm with $\xi=0$ for different average qualities of the rivals. Innovation, i.e. the number of patent applications, is higher when the firm faces weaker rivals. Hashmi and Van Biesebroeck conclude that "at least in this particular dimension (total or average quality of a firm's rivals),
+innovation is declining in competition". (paper, page 204). The number of patent applications ranges from 202 to 252 for the zero quality firm.  
+
+
+Quiz: For an average quality level of greater than 0 there seem to be no scatter points for the Leader (orange points) in this plot. Why?
+
+- There is a mistake in this plot. [ ]
+
+- When the zero quality firm is leader all four rivals must have a quality level below or equal to zero. [x]
+
+
+info("Explanation of the quiz answer above") # Run this line (Strg-Enter) to show info
+
+Keeping the average quality level of the rivals constant, the zero quality firm seems to innovate more when its own quality rank is higher. E.g. for an average rival quality level of 5 the zero quality firm's optimal innovation ranges from 207.9 to 209.6 when it is the laggard (`summary(filter(fig3_2, xi5==0, Txi_5==5)$p5)`), and from 207.9 to 213.9 when it is on fourth place in the quality ranking (`summary(filter(fig3_2, xi4==0, Txi_4==5)$p4)`). As Hashmi and Van Biesebroeck mention one is exception is apparent: when the average rival quality is low, i.e. below 0, the second firm (yellow dots) innovates more than the industry leader (orange dots).
+
+In general, there is still a wide range of optimal policies. For a leading firm, optimal innovation ranges from 214.9 to 251.7 patent applications, depending on the quality of its rivals:
+```{r "4_1___13",optional=TRUE}
+min(select(filter(fig3_2, xi1==0),p1))
+max(select(filter(fig3_2, xi1==0),p1))
+```
+
+In the next plot we only consider observations where the the middle firm (firm 3 - here depicted with green dots) has the quality level 0. We then look at the innovation levels for different quality distance of the middle firm to its neighbours (firms 2 and 4) and the leader and laggard.
+
+### Relationship between Innovation and Quality Dispersion
+
+We first calculate the quality dispersions. The variable `GAPxi12` represents the quality gap between the better neighbour of the middle firm and the leader. `GAPxi45` the gap between the worse neighbour and the laggard. We only look at symmetric quality dispersions (`xi2==-xi4`and `GAPxi12==GAPxi45`). Just click `check` to create the variables and to filter out unsymmetric market structures.
+
+```{r "4_1___14"}
+fig4 = equilibrium_data %>%
+        filter(firms==5) %>%
+        mutate(GAPxi12=xi1-xi2, GAPxi45=xi4-xi5) %>%
+        filter(xi3==0 & xi2==-xi4 & GAPxi12==GAPxi45)
+```
+
+We then create a contour plot with `plotly` that shows the relationship between patent applications and dispersion in the quality level:
+
+```{r "4_1___15",output='htmlwidget', widget='plotly'}
+library(plotly)
+plot_ly(data=fig4, x = ~xi2, y = ~GAPxi12, z = ~p3, type = "contour") 
+```
+
+On the x-Axis we have the quality level of firm 2 $\xi_2$, which correspond to the quality gap of our middle firm with firm 2 (+) and firm 4(-). This is because the middle firm has quality 0 and we only consider symmetric market structures. On the y-Axis, the additional quality gap to the leader (firms 1) and the laggard (firm 5) is shown. The contour lines then show the innovation levels of the middle firm, which has a constant quality level of 0,for the different dispersions in the market structure.  
+Innovation is lowest in the bottom left corner. Here, the gap between the middle firm and its neighbours is zero and the additional gap between the neighbours and the leader, respectively laggard too zero. So all five firms have quality zero, i.e. at the bottom left corner we have the symmetric market structure. Increasing the gap to the neighbours by 8 increases the number of patent application from 214.9 to 217.7 keeping the gap between neighbours and leader and laggard at zero (this is a movement along the x-Axis). Increasing the gap between the neighbours and the leader and laggard by 8 while keeping the quality levels of the neighbours at zero leads to an increase in patent applications by the middle firm 214.9 to 260. This is in line with Hashmi and Van Biesebroeck's observation that "the contour lines have a slope steeper than -1, indicating that raising the gap with the firms at the extremes has a similar but smaller effect". (paper, page 204)
+
+Overall, the number of patent applications for the middle firm becomes higher as dispersion increases. Lastly we `slice()` the data frame to get the market structure for which the middle firm has the highest number of patent applications `p3`:
+
+```{r "4_1___16"}
+fig4 %>% slice(which.max(p3))
+```
+
+In this part we didn't make a statement about the aggregate innovation levels. Hashmi and Van Biesebroeck argue that whether "aggregate innovation increases or decreases depends crucially on where we conduct this exercise of a mean-preserving increasing in quality dispersion. On the one hand, innovation is higher when firms are in the middle of the quality range. On the other hand, innovation is higher when rivals are farther from one another". (paper, page 204). Further they state that the first effect dominates for the contour plot.
+
+
+## Exercise 4.2 -- Counterfactual Scenario: Effect of Entry
+
+
+How does optimal innovation change if an additional firm enters the market? Technically, we would have to calculate the new equilibrium decisions for the situation with the additional firm. But remember that we have equilibrium data for four and five firms. For all possible market structures with four incumbents, we thus can calculate how the entrant of a fifth firm changes the optimal innovation decisions of the active firms, holding their quality levels constant. To do this, we just have to match the correct market structures of the observations with four firms with the corresponding structures with five firms. 
+
+First we load `equilibrium_data` again:
+
+```{r "4_2"}
+equilibrium_data = readRDS(file="equilibrium_data.Rda")
+```
+
+
+We now consider an entrant with quality level  $\xi=-14$. First we store the equilibrium data for four firms as `four`. Keep in mind that the observations are already arranged so that $\xi_1 \ge \xi_2 \ge \xi_3 \ge \xi_4$. The data frame `five_minus` contains all observations with five firms where the laggard firm, i.e. the fifth firm, has a quality level of -14.  
+When then merge `five_minus` and `four` by the quality levels `xi1, xi2, xi3, xi4` to ensure that we match the correct market structures.
+
+```{r "4_2__2"}
+# keep obs with 4 firms (before entry) and obs with 5 firms where xi_5=-14:
+four = equilibrium_data %>% 
+                    filter(firms==4)
+                    
+  
+five_minus = equilibrium_data %>% 
+                    filter(firms==5 & xi5==-14) 
+
+minus_merged = merge(five_minus, four, by=c("xi1", "xi2", "xi3", "xi4"))
+
+colnames(minus_merged)
+```
+
+Variables that are from the data frame `five_minus` have a `.x` added in `minus_merged`, i.e. the number of patent applications of firm five are stored as variable `p5.x`. The variables from `four` have a `.y` added.  
+Next we want to calculate the relative number of patent applications of incumbents in the situations with five versus four firms. We also calculate the absolute difference in patent applications. We only consider the incumbent leader (firm 1), and the incumbent laggard (firm 4).
+
+
+```{r "4_2__3"}
+minus_fig5 = mutate(minus_merged, 
+        # number of patents of firm 1 with five firms (p1.x) divided by
+        # the number of patents with four firms (p1.y):
+                     rat_p1 = p1.x/p1.y, 
+                     rat_p4 = p4.x/p4.y,
+        # number of patents of firm 1 with five firms (p1.x) minus the
+        # the number of patents with four firms (p1.y):
+                     dif_p1=p1.x-p1.y,
+                     dif_p4=p4.x-p4.y)
+```
+
+Now plot the calculated changes in optimal innovation for the leader and laggard incumbents after the entry of a firm with quality -14:
+
+```{r "4_2__4"}
+library(ggplot2)
+
+top_left = ggplot(data=minus_fig5) + 
+  geom_point(aes(x=xi4, y=rat_p4, color="firm 4")) +
+  geom_point(aes(x=xi1, y=rat_p1, color="firm 1"))
+
+bottom_left = ggplot(data=minus_fig5) + 
+  geom_point(aes(x=xi4, y=dif_p4, color="firm 4")) +
+  geom_point(aes(x=xi1, y=dif_p1, color="firm 1"))
+
+library(gridExtra)
+grid.arrange(top_left, bottom_left, ncol=1)
+```
+
+The ratios (`rat_p`) are both less than 1 and the differences are negative. This means that the leader and the laggard (and also the other two incumbent firms) decide to decrease the number of patent applications when faced with an additional competitor, even when this firm has the minimal quality level -14. 
+
+Next we consider an entrant with quality level 0. This is a little harder to compute as such an entrant doesn't have a set place in the quality ranking. An entry with quality level -14 is always the worst, so we could easily match $xi_1$ to $ xi_4$ and keep the entrant at the fifth position. An entrant with quality level 0 can be leader (when all other firms have a quality level below or at 0), a laggard (when all other firms have a quality level above or at 0) and everything in-between. I do this by calculating the place in the quality ranking with a lot of `ifelse()` conditions. Just click `check`. You don't have to go through the code as it does basically the same as for the entry with quality level 0.
+ 
+```{r "4_2__5"}
+#### entry of firm with quality xi=0
+
+entry_zero=filter(equilibrium_data, firms==5 & (xi1==0 | xi2==0 | xi3==0 | xi4==0 | xi5==0))
+
+entry_zero_1=mutate(entry_zero, 
+                    place=ifelse(xi1==0,1,
+                                ifelse(xi2==0,2,
+                                ifelse(xi3==0,3,
+                                ifelse(xi4==0,4,5)))),
+                    xi1_old=ifelse(xi1 == 0,xi2,xi1),
+                    xi2_old=ifelse(xi1 == 0 | xi2 == 0, xi3, xi2),
+                    xi3_old=ifelse(xi1 == 0 | xi2 == 0 | xi3 == 0, xi4, xi3),
+                    xi4_old=ifelse(
+                      xi1 == 0 | xi2 == 0 | xi3 == 0 | xi4 == 0, xi5, xi4)
+)
+
+
+entry_zero_2 = entry_zero_1 %>% arrange(xi1_old, xi2_old, xi3_old, xi4_old) %>% mutate(ID=1:3060)
+
+entry_minus_four = equilibrium_data %>% 
+                    filter(firms==4) %>% 
+                    arrange(xi1,xi2,xi3,xi4) %>%
+                    mutate(ID=1:3060)
+
+zero_merged = merge(entry_zero_2, entry_minus_four, by="ID")
+
+test=mutate(zero_merged, correct=(xi1_old==xi1.y & xi2_old==xi2.y & xi3_old==xi3.y & xi4_old==xi4.y))
+table(test$correct)
+
+zero_fig5 = mutate(zero_merged, rat_p1=ifelse(xi1.x==0, p2.x/p1.y, p1.x/p1.y),
+                                rat_p2=ifelse(xi1.x==0 | xi2.x==0, p3.x/p2.y, p2.x/p2.y),
+                                rat_p3=ifelse(xi1.x==0 | xi2.x==0 | xi3.x==0, p4.x/p3.y, p3.x/p3.y),
+                   rat_p4=ifelse(xi1.x==0 | xi2.x==0 | xi3.x==0 | xi4.x==0, p5.x/p4.y, p4.x/p4.y),
+                   dif_p1=ifelse(xi1.x==0, p2.x-p1.y, p1.x-p1.y),
+                   dif_p2=ifelse(xi1.x==0 | xi2.x==0, p3.x-p2.y, p2.x-p2.y),
+                   dif_p3=ifelse(xi1.x==0 | xi2.x==0 | xi3.x==0, p4.x-p3.y, p3.x-p3.y),
+                   dif_p4=ifelse(xi1.x==0 | xi2.x==0 | xi3.x==0 | xi4.x==0, p5.x-p4.y, p4.x-p4.y))
+                   
+top_middle = ggplot(data=zero_fig5) + 
+                  geom_point(aes(x=xi4_old, y=rat_p4, color="firm 4")) +
+                  geom_point(aes(x=xi3_old, y=rat_p3, color="firm 3")) +
+                  geom_point(aes(x=xi2_old, y=rat_p2, color="firm 2")) +
+                  geom_point(aes(x=xi1_old, y=rat_p1, color="firm 1"))
+         
+bottom_middle = ggplot(data=zero_fig5) + 
+  geom_point(aes(x=xi4_old, y=dif_p4, color="firm 4")) +
+  geom_point(aes(x=xi3_old, y=dif_p3, color="firm 3")) +
+  geom_point(aes(x=xi2_old, y=dif_p2, color="firm 2")) +
+  geom_point(aes(x=xi1_old, y=dif_p1, color="firm 1"))
+
+```
+
+This plot looks similar to the one before, thus we don't display it now. Rather we now consider another entrant and then plot the results together to see differences and similarities for different types of entrants.
+
+We choose an entrant with the highest quality level 14. This is easier to calculate than the entrant with quality level 0 before. An entrant with quality level 14 is always leader, i.e. firm 1. We thus can match the data frames similarly as in the first case.  
+
+```{r "4_2___5573317"}
+
+#### entry of firm with quality xi=14
+
+
+entry_plus_five = equilibrium_data %>% 
+                        filter(firms==5 & xi1==14) %>% 
+                        arrange(xi1,xi2,xi3,xi4) %>%
+                        mutate(ID=1:3060)
+
+plus_merged = merge(entry_plus_five, entry_minus_four, by="ID")
+
+plus_fig5 = mutate(plus_merged, rat_p1=p2.x/p1.y,
+                   rat_p2=p3.x/p2.y,
+                   rat_p3=p4.x/p3.y,
+                   rat_p4=p5.x/p4.y,
+                   dif_p1=p2.x-p1.y,
+                   dif_p2=p3.x-p2.y,
+                   dif_p3=p4.x-p3.y,
+                   dif_p4=p5.x-p4.y)
+
+top_right = ggplot(data=plus_fig5) + 
+  geom_point(aes(x=xi5.x, y=rat_p4, color="firm 4")) +
+  geom_point(aes(x=xi2.x, y=rat_p1, color="firm 1"))
+
+bottom_right = ggplot(data=plus_fig5) + 
+  geom_point(aes(x=xi5.x, y=dif_p4, color="firm 4")) +
+  geom_point(aes(x=xi2.x, y=dif_p1, color="firm 1"))
+```
+
+When now put all six plots in one figure with `gridExtra`:
+
+```{r "4_2__2___4499276",fig.width=12}
+library(gridExtra)
+grid.arrange(top_left, top_middle, top_right, bottom_left, bottom_middle, bottom_right, nrow=2)
+```
+
+The three columns of the figure show the situations of adding the new firm, respectively, at the minimum quality level -14, exactly in the middle 0, or at the maximum quality level 14. The first row shows the relative innovation of the four incumbents in the situation with five versus four active firms and the bottom graphs the absolute difference in desired patents.
+All ratios are less than one and all differences are negative. Incumbents always choose to innovate less when faced with an additional competitor. 
+
+
+## Exercise 5 Conclusion 
+
+In this interactive problem set we replicated the main results of Hashmi and Van Biesebroeck's paper. We specified and estimated a dynamic game with strategic and forward-looking innovating firms for the automobile sector. With the underlying model we then studied the relationship between market structure and innovation in the industry. 
+We saw that optimal innovation, i.e. the optimal number of patent applications, has an inverted-U shape in own quality. This pattern is similar to the findings of Aghion et. al. (2005). Further we found out that, holding own quality constant, the number of patent applications is declining in the average quality of the rivals. Innovation is increasing in quality dispersion, holding own quality constant.  
+In the last exercise we analyzed how an entrant influences optimal innovation decisions. We found out that each incumbent's innovation level declines when facing an additional competitor. The last finding is not necessarily consistent with the Schumpeterian hypothesis as the aggregate level of innovation for most market structures increases.
+
+
+If you want to display the awards that you earned throughout this problem set, just press `check` in the code chunk below.
+
+```{r "5_Conclusion_"}
+awards()
+```
+
+
+
+## Exercise 6 -- References
+
+### Bibliography
+
+- Aghion, P., N. Bloom, R. Blundell, R. Griffith, and P. Howitt (2005). "Competition and Innovation: An Inverted-U Relationship" Quarterly Journal
+of Economics 120, 701-728.
+
+- Bajari, P., C. L. Benkard, and J. Levin (2007). "Estimating Dynamic Models of Imperfect Competition" Econometrica 75, 1331-1370.
+
+- Berry, S. (1994). "Estimating Discrete-Choice Models of Product Differentiation" Rand Journal of Economics 25(2), 242-262.
+
+- Berry, S., J. Levinsohn, and A. Pakes (1995). "Automobile Prices in Market Equilibrium" Econometrica 63 (1995), 841-890.
+
+- Boone, J. (2000), "Intensity of Competition and the Incentive to Innovate" International Journal of Industrial Organization 19, 705-726.
+
+- Church, J. R., and R. Ware (2000), "Industrial organization: a strategic approach" Boston, Irwin McGraw Hill.
+
+- European Commission, (2013). "Why are mergers examined at the European level?" [online] Available at: http://ec.europa.eu/competition/mergers/overview_en.html [Accessed 03 Okt. 2016]
+
+- Gilbert, R. (2006), "Looking for Mr. Schumpeter: Where Are We in the Competition-Innovation Debate?" in A. B. Jaffe, J. Lerner, and S. Stern, eds., Innovation Policy and the Economy, vol. 6 (Cambridge: MA: MIT Press).
+
+- Goettler, R. L., and B. R. Gordon (2011). "Does AMD Spur Intel to Innovate More?" Journal of Political Economy 119, 1141-1200.
+
+- Hashmi, A. R. and J. Van Biesebroeck (2016). "The relationship between market structure and innovation in industry equilibrium: A case study of the global automobile industry" Review of Economics and Statistics March 2016, 98(1), 192-208. 
+
+- Hashmi, A. R. and J. Van Biesebroeck (2009). "Market Structure and Innovation: A Dynamic Analysis of the Global Automobile Industry" [online] Available at: https://www.ftc.gov/sites/default/files/documents/public_events/second-annual-microeconomics-conference/vanbieseppr.pdf [Accessed 01 Oct. 2016].
+
+- Kallstrom, H. (2015). "Why growth shifted in the global automotive industry" [online] Available at: http://marketrealist.com/2015/02/shift-growth-global-automotive-industry/ [Accessed 25 Oct. 2016].
+
+- Musk, E. (2014). "All Our Patent Are Belong To You" [online] Available at: https://www.tesla.com/blog/all-our-patent-are-belong-you?redirect=no [Accessed 07. Dec. 2016].
+
+- Pakes, A., and P. McGuire (1994). "Computing Markov-Perfect Nash Equilibria: Numerical Implications of a Dynamic Differentiated Product Model" RAND Journal of Economics 25, 555-589.
+
+- Rasmusen, E. (2007). "The BLP Method of Demand Curve Estimation in Industrial Organization" [online] Available at: http://www.rasmusen.org/published/blp-rasmusen.pdf [Accessed 10 Sep. 2016].
+
+- Ryan, S.P. (2012). "The Cost of Environmental Regulation in a Concentrated Industry" Econometrica 80, 1019-1061
+
+- Schumpeter, J. A. (1942), "Capitalism, Socialism and Democracy" New York: Harper.
+
+- Stock, J. and W. Mark (2007). "Introduction to Econometrics", International Edition. 2nd ed Upper Saddle River, NJ: Prentice Hall
+
+- Tesla Motors, Inc. (2016), "ANNUAL REPORT ON FORM 10-K FOR THE YEAR ENDED DECEMBER 31, 2015", [online] Available at: http://ir.tesla.com/secfiling.cfm?filingID=1564590-16-13195&CIK=1318605 [Accessed 03 Oct. 2016].
+
+- Train, K. (2003), "Discrete Choice Methods with Simulation" Cambridge University Press, [online] Available at: http://elsa.berkeley.edu/books/choice2.html [Accessed 25 Oct. 2016].
+
+- US Department of Justice https://www.justice.gov/atr/horizontal-merger-guidelines-08192010#5c
+
+- Wilkinson, L. (2005). "The Grammar of Graphics". Springer. 
+
+### R and Packages in R
+
+- Baptiste, A. (2016). gridExtra: Miscellaneous Functions for "Grid" Graphics. R package version 2.2.1.
+  https://CRAN.R-project.org/package=gridExtra
+
+- Bolker, B. and R Development Core Team (2016). bbmle: Tools for General Maximum Likelihood Estimation. R package version 1.0.18.
+  https://CRAN.R-project.org/package=bbmle
+  
+- Gaure, S. (2013) lfe. "Linear group fixed effects, The R Journal, 5(2):104-117 http://cran.r-project.org/web/packages/lfe/index.html
+
+- Komsta, L. and Frederick Novomestky (2015). moments: Moments, cumulants, skewness, kurtosis and related tests. R package version
+  0.14. https://CRAN.R-project.org/package=moments
+  
+- Kleiber, C. and Achim Zeileis (2008): AER. "Applied Econometrics with R", R package version 1.2-4 http://CRAN.R-project.org/package=AER
+  
+- Kranz, S. (2015): RTutor. "Creating R problem sets with automatic assessment of student's solutions", R package version 2015.12.16 https://github.com/skranz/RTutor 
+
+- Kranz, S. (2016): "regtools: Some tools for regressions and presentation of regressions results", R package version 0.2
+
+- Persson, E. (2016). OECD: Search and Extract Data from the OECD. R package version 0.2.2. https://CRAN.R-project.org/package=OECD
+
+- R Core Team (2015): foreign. "Read Data Stored by Minitab, S, SAS, SPSS, Stata, Systat, Weka, dBase, ...", R package version 0.8-66 http://cran.r-project.org/package=foreign 
+
+- R Development Core Team (2015). R. "A language and environment for statistical computing, R Foundation for Statistical Computing", Vienna, Austria.  http://www.r-project.org 
+
+- Sievert, Carson, Chris Parmer, Toby Hocking, Scott Chamberlain, Karthik Ram, Marianne Corvellec and Pedro Despouy (2016). plotly: Create
+  Interactive Web Graphics via 'plotly.js'. R package version 4.5.2. https://CRAN.R-project.org/package=plotly
+  
+- Wickham, H. and Francois, R. (2015): dplyr. "A Grammar of Data Manipulation", R package version 0.4.3 http://cran.r-project.org/web/packages/dplyr/index.html 
+
+- Wickham, H., Chang, W. (2015): ggplot2. An Implementation of the Grammar of Graphics, R package version 1.0.1 http://cran.r-project.org/web/packages/ggplot2/index.html
+
+- Wickham H. (2007). Reshaping Data with the reshape Package. Journal of Statistical Software, 21(12), 1-20. URL
+  http://www.jstatsoft.org/v21/i12/
+  
+- Wickham H. (2007). The Split-Apply-Combine Strategy for Data Analysis. Journal of Statistical Software, 40(1), 1-29. URL
+  http://www.jstatsoft.org/v40/i01/
+
+
+
+## Exercise Appendix 1 -- OECD
+
+We use the package `OECD` to load the data directly into the work space. The function `get_dataset()` with the code for the desired data set  
+`ANBERD2011_REV3` (the ANBERD database) and the filter expression
+`FRA_PF+DEU_MA+JPN_MA+KOR_MA+USA_MA.USDPPP.C24+C30+C32+C33+C34`  
+for the countries: France, Germany, Japan, Korea, USA  
+the PPP R&D expenditures in USD  
+of the sectors: Chemicals (C24), Radio, TV, Telecommunications Equipment (C32), Motor Vehicles (C34), Medical, Precision, Optical Instruments (C33), Computing and Related Machinery (C30)   
+
+**Task**: Just click `check` to load the package `OECD` and the R&D expenditure data set. In the chunk we use the function `get_dataset()` of the `OECD` package.
+
+```{r "Appendix_1"}
+library(OECD)
+t1=get_dataset("ANBERD2011_REV3", filter="/FRA_PF+DEU_MA+JPN_MA+KOR_MA+USA_MA.USDPPP.C24+C30+C32+C33+C34", pre_formatted=TRUE)
+```
+
+We now have a data frame `t1` with 470 observations of eight variables. To get an overview of the data, we use the function `head()`. It returns the first six observations of our table `t1`.
+
+
+
+```{r "Appendix_1__2"}
+# Enter the command below
+head(t1)
+```
+
+With the package `dplyr` we now chose only observations of the year 2006 and further only select the variables `COU` (country), `IND`(industry) and `obsValue` (R&D expenditures).  
+We use the data from 2006, because later on we will only have firm-level data up to the year 2006. Just click `check`.  
+
+```{r "Appendix_1__3"}
+library(dplyr)
+t1_2006=filter(t1, obsTime=="2006") %>% select(COU, IND, obsValue)
+t1_2006$obsValue=t1_2006$obsValue/1E9 # change to Billion Dollar
+```
+
+Currently we have long-format data.  
+We then transform the long data format to a wide format with the function `dcast(data, ID variables, measured variable)` of the package `reshape2`. Just click `check`.
+
+```{r "Appendix_1__4"}
+library(reshape2)
+table1 = dcast(t1_2006, IND~COU, value.var="obsValue")
+```
+
+Last we rename the table and order it. Just click `check`.
+
+```{r "Appendix_1__5"}
+colnames(table1)=c("Sector", "Germany", "France", "Japan", "Korea", "USA")
+table1$Description=c("Chemicals", "Computing and Related Machinery", "Radio, TV, Telecommunications Equipment", "Medical, Precision, Optical Instruments", "Motor Vehicles")
+
+table1=select(table1, Sector, Description, USA, Japan, Germany, Korea, France)
+table1=arrange(table1, desc(USA))
+```
+
+
+
+## Exercise Appendix 2 -- Verboven's Car Data and STATA Variable Lables
+
+Let's retrieve Verboven's data set directly from the web:
+
+```{r "Appendix_2"}
+cars=read.dta("https://sites.google.com/site/frankverbo/data-and-software/data-set-on-the-european-car-market/cars.dta")
+colnames(cars)
+```
+
+Unfortunately the variable names are not intuitive (`ye`, `ma`, `co`, ...). dta-data usually have, additional to the variable names, so-called variable labels which deliver a description of the variables. These labels are already hidden in our data frame and with the `attr()` command we can extract them. The function `attr()` is used to get or set specific attributes of an R object. The attribute that we want here is `var.labels` as it contains the mentioned variable labels.
+
+**Task:** Use `attr(object, which)` to get the attribute `var.labels` of the data frame and save it in an object `var.labels`. The argument `object` should be our data frame `data` and the argument `which` a string. For strings in R you need either single or double quotes like in other programming languages.
+
+```{r "Appendix_2__2"}
+# ... = attr(...,"var.labels")
+var.labels <- attr(cars,"var.labels")
+
+```
+
+
+We have created a character object `var.labels` with the labels of the Stata data set. Next we create a data frame where we contrast the variable names with the variable labels.
+
+**Task:** Create a data frame with the function `data.frame()`, where the variable names `names(cars)` are in the first column with a name `Variable` and the variable labels in the second column with a name `Labels` and store it as `Variable.Label`.
+
+```{r "Appendix_2__3"}
+# Create the data frame `Variable.label` in the next line.
+Variable.Label <- data.frame(Variable=names(cars), Labels=var.labels)
+
+Variable.Label
+```
+
+Now we have a clear description of the variables.
+

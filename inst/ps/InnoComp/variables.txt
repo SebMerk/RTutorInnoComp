@@ -1,0 +1,80 @@
+orgvar | var | descr 
+
+Sector | Sector | UN's ISIC (International Standard Industrial Classification) sector code
+Description | Description | Description of the ISIC sector
+USA | USA | R&D expenditures by ISIC sector in the USA in 2006 in PPP Billion dollar
+Japan | Japan | R&D expenditures by ISIC sector in Japan in 2006 in PPP Billion dollar
+Germany | Germany | R&D expenditures by ISIC sector in Germany in 2006 in PPP Billion dollar
+Korea | Korea | R&D expenditures by ISIC sector in South Korea in 2006 in PPP Billion dollar
+France | France | R&D expenditures by ISIC sector in France in 2006 in PPP Billion dollar
+year | year | Sample year
+firm | firm | Manufacturer
+market_share | market_share | Market Share of firm
+price | price | Price of vehicle in thousand 1983 dollar
+sales | sales | Worldwide sales
+pat_app | pat_app | Number of patents applied for
+pat_grant | pat_grant | Number of patents granted
+country | country | Country
+make | make | Name of brand
+model | model | Name of model
+Tsales | Tsales | Sales (number of new car registrations)
+size | size | Size (length x width x height) of the model
+hpwt | hpwt | Horsepower by weight
+mpg | mpg | Miles per gallon
+mpd | mpd | Fuel efficiency (miles per dollar)
+avdexr | avdexr | Avg. exchange rate of destination country (destination 'ma' currency per SDR)
+avdcpr | avdcpr | Avg. consumer price index of destination country
+aftermerge1 | aftermerge1 | Daimler-Chrysler merger dummy variable
+market | market | Dummy variable: 1 when EU, 0 when USA
+share | share | Market share of model
+lns | lns | Log of market share
+Dlns | Dlns | Difference in log market shares between vehicle and outside vehicle
+Dprice | Dprice | Difference in price between vehicle and outside vehicle
+Dsize | Dsize | Difference in size between vehicle and outside vehicle
+Dhpwt | Dhpwt | Difference in hpwt (horsepower by weight) between vehicle and outside vehicle
+Dmpd | Dmpd | Difference in mpd (fuel efficiency) between vehicle and outside vehicle
+xi1_lag | xi1_lag | Relative firm quality in the previouse year for the constant marginal cost specification (1)
+xi3_lag | xi3_lag | Relative firm quality in the previous year for the constant log-linear cost specification (3)
+lpat_app | lpat_app | Log of the number of patents applied for
+up1 | up1 | Dummy variable: 1 when firm moves up one relative quality level, 0 else
+down1 | down1 | Dummy variable: 1 when firm moves down one relative quality level, 0 else
+stay1 | stay1 | Dummy variable: 1 when firm stays on it's current quality level, 0 else
+p1 | p1 | Number of patent applications by the leading firm (firm 1)
+p2 | p2 | Number of patent applications by firm 2
+p3 | p3 | Number of patent applications by firm 3
+p4 | p4 | Number of patent applications by firm 4
+p5 | p5 | Number of patent applications by firm 5
+Kxi1 | Kxi1 | Relative quality level of the leading firm (firm 1)
+Kxi2 | Kxi2 | Relative quality level of firm 2
+Kxi3 | Kxi3 | Relative quality level of firm 3
+Kxi4 | Kxi4 | Relative quality level of firm 4
+Kxi5 | Kxi5 | Relative quality level of firm 5
+xi1 | xi1 | Relative quality level of the leading firm (firm 1)
+xi2 | xi2 | Relative quality level of firm 2
+xi3 | xi3 | Relative quality level of firm 3
+xi4 | xi4 | Relative quality level of firm 4
+xi5 | xi5 | Relative quality level of firm 5
+firms | firms | Number of firms
+mean_p | mean_p | Average number patent applications
+mean_xi | mean_xi | Average quality level of the firms
+min_p | min_p | Minimum number of patent applications by the leading or lagging firm
+max_p | max_p | Maximum number of patent applications by the leading or lagging firm
+dispersion | dispersion | max_p/min_p
+xi_sd | xi_sd | Standard deviation of the quality levels of a market structure
+max_diff | max_diff | Maximum difference in quality levels
+sum_xi | sum_xi | Sum of the quality levels in a market structure
+Txi_1 | Txi_1 |  Average quality of the rivals for the leading firm (firm 1)
+Txi_2 | Txi_2 |  Average quality of the rivals for the second firm 
+Txi_3 | Txi_3 |  Average quality of the rivals for the third firm 
+Txi_4 | Txi_4 |  Average quality of the rivals for the fourth firm 
+Txi_5 | Txi_5 |  Average quality of the rivals for the lagging firm (firm 5) 
+GAPxi12 | GAPxi12 | Gap in quality between the leading firm and firm 2
+GAPxi45 | GAPxi45 | Gap in quality between the firm 4 and the lagging firm
+rat_p1 | rat_p1 | Firm 1's ratio of patent applications with five firms to patent appplications with four firms
+rat_p2 | rat_p2 | Firm 2's ratio of patent applications with five firms to patent appplications with four firms
+rat_p3 | rat_p3 | Firm 3's ratio of patent applications with five firms to patent appplications with four firms
+rat_p4 | rat_p4 | Firm 4's ratio of patent applications with five firms to patent appplications with four firms
+dif_p1 | dif_p1 | Firm 1's difference of patent applications with five firms to patent appplications with four firms
+dif_p2 | dif_p2 | Firm 2's difference of patent applications with five firms to patent appplications with four firms
+dif_p3 | dif_p3 | Firm 3's difference of patent applications with five firms to patent appplications with four firms
+dif_p4 | dif_p4 | Firm 4's difference of patent applications with five firms to patent appplications with four firms
